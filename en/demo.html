@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error Correction Plugin · Demo and Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+ * DEMO PAGE (styles for this demo only, NOT part of the plugin)
+ * ================================================================ */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: #f6f6f4;
+  color: #1a1a1a;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 40px 24px 120px;
+}
+.page-hero {
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 24px;
+  margin-bottom: 28px;
+}
+.page-hero .tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #777;
+  margin-bottom: 10px;
+}
+.page-hero h1 {
+  font-family: 'Inter', serif;
+  font-size: 36px;
+  line-height: 1.15;
+  margin: 0 0 10px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.page-hero p {
+  font-size: 16.5px;
+  color: #444;
+  margin: 0;
+  max-width: 640px;
+}
+article.demo {
+  background: white;
+  border: 1px solid #e5e5e2;
+  border-radius: 10px;
+  padding: 28px 32px 32px;
+  margin-bottom: 40px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+article.demo h2.demo-headline {
+  font-size: 26px;
+  line-height: 1.25;
+  margin: 0 0 8px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+article.demo .demo-byline {
+  font-size: 13px;
+  color: #777;
+  margin: 0 0 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+article.demo p {
+  font-size: 16px;
+  margin: 0 0 14px;
+}
+.section-title {
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #777;
+  border-top: 1px solid #d4d4d4;
+  padding-top: 20px;
+  margin-top: 44px;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+.docs {
+  background: white;
+  border: 1px solid #e5e5e2;
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+}
+.docs h3 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+.docs h3:not(:first-child) { margin-top: 26px; }
+.docs p { margin: 0 0 10px; font-size: 15px; }
+.docs ul { padding-left: 20px; margin: 0 0 10px; }
+.docs li { margin-bottom: 6px; font-size: 15px; }
+.docs code, .docs pre {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+}
+.docs code {
+  background: #f1f1ed;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #b0347d;
+}
+.docs pre {
+  background: #fafaf8;
+  border: 1px solid #eee;
+  border-left: 3px solid #b0347d;
+  border-radius: 6px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  line-height: 1.55;
+  color: #222;
+}
+.docs pre code { background: transparent; padding: 0; color: inherit; }
+
+/* ================================================================
+ *  ▼ PLUGIN START — COPY FROM THIS LINE TO THE END MARKER ▼
+ *  Error Correction Plugin (CSS)
+ *  Namespace: .ec-*
+ * ================================================================ */
+
+:root {
+  --ec-font: 'Inter', -apple-system, system-ui, sans-serif;
+  --ec-text: #1a1a1a;
+  --ec-muted: #6b6b6b;
+  --ec-border: #e5e5e2;
+  --ec-bg: #ffffff;
+  --ec-bg-alt: #fafaf8;
+  --ec-accent: #b0347d;            /* primary accent color (editable) */
+  --ec-accent-soft: #fbecf4;
+  --ec-recent-bg: #fff5d9;         /* amber for <24h */
+  --ec-recent-border: #e6c555;
+  --ec-recent-text: #7a5800;
+  --ec-before-bg: #fdecec;         /* soft red for "before" */
+  --ec-before-text: #8a1f1f;
+  --ec-before-border: #f2b8b8;
+  --ec-after-bg: #e8f5ea;          /* soft green for "after" */
+  --ec-after-text: #1e5a2a;
+  --ec-after-border: #a8d5b0;
+  --ec-radius: 8px;
+  --ec-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* ---------- Inline correction (within article body text) ---------- */
+.ec-inline {
+  background: var(--ec-recent-bg);
+  border-bottom: 2px solid var(--ec-recent-border);
+  padding: 1px 3px;
+  border-radius: 3px 3px 0 0;
+  cursor: help;
+  font-style: normal;
+  position: relative;
+  transition: background 0.15s;
+}
+.ec-inline:hover { background: #fce9b0; }
+.ec-inline::after {
+  content: "✎";
+  font-size: 0.72em;
+  color: var(--ec-recent-text);
+  margin-left: 3px;
+  font-weight: 700;
+}
+.ec-inline-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  background: #1a1a1a;
+  color: white;
+  font-size: 12.5px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 6px;
+  min-width: 220px;
+  max-width: 320px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  z-index: 50;
+  font-style: normal;
+  font-weight: 400;
+  white-space: normal;
+}
+.ec-inline-tooltip strong { color: var(--ec-recent-border); font-weight: 700; }
+.ec-inline-tooltip .ec-tooltip-before {
+  display: block;
+  text-decoration: line-through;
+  color: #ff9a9a;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.ec-inline-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 14px;
+  border: 6px solid transparent;
+  border-top-color: #1a1a1a;
+}
+
+/* ---------- Correction block (top or bottom of article) ---------- */
+.ec-block {
+  background: var(--ec-bg);
+  border: 1px solid var(--ec-border);
+  border-left: 4px solid var(--ec-accent);
+  border-radius: var(--ec-radius);
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-family: var(--ec-font);
+  color: var(--ec-text);
+}
+.ec-block.ec-recent {
+  border-left-color: var(--ec-recent-border);
+  background: linear-gradient(to right, var(--ec-recent-bg) 0%, var(--ec-bg) 40%);
+}
+.ec-block-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--ec-muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+.ec-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--ec-accent-soft);
+  color: var(--ec-accent);
+}
+/* Palette aligned with the landing page (factual/spelling/imprecision/statement/other) */
+.ec-badge.ec-type-factual { background: #fef2f2; color: #dc2626; }
+.ec-badge.ec-type-spelling { background: #eef2ff; color: #6366f1; }
+.ec-badge.ec-type-imprecision { background: #fff7ed; color: #ea580c; }
+.ec-badge.ec-type-statement { background: #faf5ff; color: #9333ea; }
+.ec-badge.ec-type-other { background: #eee; color: #444; }
+.ec-badge-recent {
+  background: var(--ec-recent-bg);
+  color: var(--ec-recent-text);
+  border: 1px solid var(--ec-recent-border);
+}
+.ec-block-date { font-variant-numeric: tabular-nums; }
+.ec-block-title {
+  font-size: 15.5px;
+  font-weight: 600;
+  margin: 2px 0 4px;
+  line-height: 1.35;
+}
+.ec-block-reason {
+  font-size: 14px;
+  color: #3a3a3a;
+  margin: 0 0 12px;
+  line-height: 1.55;
+}
+.ec-diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.ec-diff-before, .ec-diff-after {
+  font-size: 13.5px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  line-height: 1.5;
+  position: relative;
+  padding-top: 24px;
+}
+.ec-diff-before {
+  background: var(--ec-before-bg);
+  color: var(--ec-before-text);
+  border: 1px solid var(--ec-before-border);
+  text-decoration: line-through;
+  text-decoration-color: rgba(138,31,31,0.4);
+}
+.ec-diff-after {
+  background: var(--ec-after-bg);
+  color: var(--ec-after-text);
+  border: 1px solid var(--ec-after-border);
+  font-weight: 500;
+}
+.ec-diff-before::before, .ec-diff-after::before {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.ec-diff-before::before { content: "Before"; color: var(--ec-before-text); opacity: 0.7; }
+.ec-diff-after::before  { content: "After";  color: var(--ec-after-text);  opacity: 0.7; }
+@media (max-width: 560px) {
+  .ec-diff { grid-template-columns: 1fr; }
+}
+
+/* ---------- Corrections archive (full list) ---------- */
+.ec-list {
+  font-family: var(--ec-font);
+  color: var(--ec-text);
+}
+.ec-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.ec-list-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+.ec-list-subtitle {
+  font-size: 13.5px;
+  color: var(--ec-muted);
+  margin: 2px 0 0;
+}
+.ec-list-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px;
+  background: var(--ec-bg-alt);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius);
+  margin-bottom: 12px;
+}
+.ec-filter {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ec-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ec-filter:hover { background: white; color: var(--ec-text); border-color: var(--ec-border); }
+.ec-filter.ec-filter-active {
+  background: var(--ec-text);
+  color: white;
+  border-color: var(--ec-text);
+}
+.ec-list-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--ec-muted);
+  font-size: 14px;
+  background: var(--ec-bg-alt);
+  border: 1px dashed var(--ec-border);
+  border-radius: var(--ec-radius);
+}
+.ec-list-item { margin-bottom: 12px; }
+.ec-list-item:last-child { margin-bottom: 0; }
+
+/* ---------- Report error button ---------- */
+.ec-report-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ec-bg);
+  color: var(--ec-text);
+  border: 1px solid var(--ec-border);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-family: var(--ec-font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--ec-shadow);
+}
+.ec-report-button:hover {
+  background: var(--ec-text);
+  color: white;
+  border-color: var(--ec-text);
+}
+.ec-report-button::before { content: "⚑"; font-size: 14px; }
+
+.ec-button-floating {
+  position: fixed;
+  z-index: 9998;
+  background: var(--ec-text);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+}
+.ec-button-floating:hover { background: var(--ec-accent); color: white; }
+.ec-button-floating.ec-pos-bottom-right { bottom: 20px; right: 20px; }
+.ec-button-floating.ec-pos-bottom-left { bottom: 20px; left: 20px; }
+.ec-button-floating.ec-pos-top-right { top: 20px; right: 20px; }
+.ec-button-floating.ec-pos-top-left { top: 20px; left: 20px; }
+
+/* ---------- Report error modal ---------- */
+.ec-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20,20,20,0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  overflow-y: auto;
+  font-family: var(--ec-font);
+}
+.ec-modal-overlay.ec-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ec-modal {
+  background: var(--ec-bg);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+  transform: translateY(-10px);
+  transition: transform 0.2s;
+}
+.ec-modal-overlay.ec-open .ec-modal { transform: translateY(0); }
+.ec-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 22px 8px;
+}
+.ec-modal-title {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+}
+.ec-modal-subtitle {
+  font-size: 13.5px;
+  color: var(--ec-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+.ec-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--ec-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin: -4px -8px 0 0;
+  border-radius: 4px;
+}
+.ec-modal-close:hover { background: var(--ec-bg-alt); color: var(--ec-text); }
+
+.ec-form { padding: 12px 22px 22px; }
+.ec-form-group { margin-bottom: 16px; }
+.ec-form-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--ec-muted);
+  margin-bottom: 6px;
+}
+.ec-form-input, .ec-form-textarea, .ec-form-select {
+  width: 100%;
+  border: 1px solid var(--ec-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--ec-text);
+  background: var(--ec-bg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ec-form-input:focus, .ec-form-textarea:focus, .ec-form-select:focus {
+  outline: none;
+  border-color: var(--ec-accent);
+  box-shadow: 0 0 0 3px var(--ec-accent-soft);
+}
+.ec-form-textarea { resize: vertical; min-height: 90px; }
+
+.ec-form-radio-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ec-form-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--ec-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 13.5px;
+  transition: all 0.15s;
+  background: var(--ec-bg);
+}
+.ec-form-radio:hover { border-color: var(--ec-accent); background: var(--ec-accent-soft); }
+.ec-form-radio input { margin: 0; accent-color: var(--ec-accent); }
+.ec-form-radio.ec-selected {
+  border-color: var(--ec-accent);
+  background: var(--ec-accent-soft);
+  color: var(--ec-accent);
+  font-weight: 600;
+}
+@media (max-width: 460px) {
+  .ec-form-radio-group { grid-template-columns: 1fr; }
+}
+
+.ec-form-submit {
+  width: 100%;
+  background: var(--ec-text);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ec-form-submit:hover { background: var(--ec-accent); }
+.ec-form-submit:disabled { background: #bbb; cursor: not-allowed; }
+
+.ec-form-success {
+  padding: 28px 24px;
+  text-align: center;
+  color: var(--ec-after-text);
+}
+.ec-form-success-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+.ec-form-success-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--ec-text);
+}
+.ec-form-success-text {
+  font-size: 14px;
+  color: var(--ec-muted);
+  margin: 0;
+}
+
+/* ================================================================
+ *  PATTERNS BEYOND ERROR CORRECTIONS
+ *  - ec-reply   : right of reply (teal, permanent)
+ *  - ec-removed : deleted passage (gray dashed, vanishes after 24h)
+ *  - ec-new     : new content / update (yellow, marking goes after 24h, text stays)
+ * ================================================================ */
+:root {
+  --ec-reply: #0d9488;
+  --ec-reply-bg: #f0fdfa;
+  --ec-reply-soft: #ccfbf1;
+  --ec-removed: #475569;
+  --ec-removed-bg: #f1f5f9;
+  --ec-removed-border: #94a3b8;
+  --ec-new-bg: #fff5d9;
+  --ec-new-border: #e6c555;
+  --ec-new-text: #7a5800;
+}
+
+/* RIGHT OF REPLY */
+.ec-reply {
+  background: var(--ec-reply-bg);
+  border-left: 3px solid var(--ec-reply);
+  padding: 18px 22px 16px;
+  margin: 22px 0;
+  position: relative;
+  font-family: var(--ec-font);
+  border-radius: var(--ec-radius);
+}
+.ec-reply::before {
+  content: "⚖ Right of reply";
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--ec-reply);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.ec-reply-meta {
+  font-size: 11.5px;
+  color: var(--ec-muted);
+  margin-bottom: 10px;
+}
+.ec-reply-meta strong { color: var(--ec-text); }
+.ec-reply-intro {
+  font-size: 14px;
+  color: var(--ec-text);
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+.ec-reply-body {
+  font-family: 'Merriweather', serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ec-text);
+  border-left: 2px solid var(--ec-reply);
+  padding: 4px 0 4px 14px;
+  margin: 0 0 12px 6px;
+  font-style: italic;
+}
+.ec-reply-footer {
+  font-size: 11.5px;
+  color: var(--ec-muted);
+  text-align: right;
+  border-top: 1px solid var(--ec-reply-soft);
+  padding-top: 8px;
+}
+
+/* REMOVED PASSAGE (vanishes entirely after 24h) */
+.ec-removed {
+  background: var(--ec-removed-bg);
+  border: 1px dashed var(--ec-removed-border);
+  border-left: 3px solid var(--ec-removed);
+  padding: 16px 20px 14px;
+  margin: 22px 0;
+  position: relative;
+  font-family: var(--ec-font);
+  font-size: 13.5px;
+  color: var(--ec-text);
+  border-radius: var(--ec-radius);
+}
+.ec-removed-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.ec-removed-badge {
+  background: var(--ec-removed);
+  color: white;
+  padding: 3px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.ec-removed-meta { font-size: 11.5px; color: var(--ec-muted); }
+.ec-removed-meta strong { color: var(--ec-text); }
+.ec-removed-explanation {
+  margin: 0 0 10px;
+  line-height: 1.6;
+  font-size: 13.5px;
+}
+.ec-removed-toggle { margin-top: 6px; }
+.ec-removed-toggle summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 11.5px;
+  color: var(--ec-removed);
+  list-style: none;
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  border-radius: 4px;
+  user-select: none;
+}
+.ec-removed-toggle summary:hover { background: #f8fafc; }
+.ec-removed-toggle summary::-webkit-details-marker { display: none; }
+.ec-removed-toggle summary::marker { content: ''; }
+.ec-removed-toggle[open] summary { background: #e2e8f0; }
+.ec-removed-original {
+  margin: 12px 0 0;
+  padding: 12px 16px;
+  background: white;
+  border-left: 2px solid #cbd5e1;
+  font-family: 'Merriweather', serif;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ec-text);
+  font-style: italic;
+  text-decoration: line-through;
+  text-decoration-color: rgba(71, 85, 105, 0.4);
+  border-radius: 4px;
+}
+
+/* NEW CONTENT (yellow box with "NEW · ADDED Xh AGO" label) */
+.ec-new {
+  background: var(--ec-new-bg);
+  border-left: 3px solid var(--ec-new-border);
+  padding: 18px 22px;
+  margin: 22px 0;
+  position: relative;
+  border-radius: var(--ec-radius);
+}
+.ec-new::before {
+  content: attr(data-ec-label);
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--ec-new-border);
+  color: var(--ec-text);
+  font-family: var(--ec-font);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.ec-new p:last-child { margin-bottom: 0; }
+
+/* ================================================================
+ *  ▲ END OF PLUGIN CSS ▲
+ * ================================================================ */
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- DEMO HERO -->
+  <header class="page-hero">
+    <div class="tag">RESEARCH PROTOTYPE · LÍVIA VIEIRA</div>
+    <h1>Error Correction Plugin</h1>
+    <p>Makes journalistic corrections more visible and trackable. Works on any CMS: just include the CSS and JS from this page and add <code>data-ec-*</code> attributes to your HTML.</p>
+  </header>
+
+  <!-- DEMO: ARTICLE WITH CORRECTIONS APPLIED -->
+  <div class="section-title">Example: article with corrections</div>
+  <article class="demo">
+
+    <h2 class="demo-headline">UN Security Council calls emergency meeting after escalation in Iran</h2>
+    <p class="demo-byline">By Ana Martins · April 17, 2026, 9:42 AM</p>
+
+    <!-- CORRECTION BLOCK (generated by plugin from data-ec-block) -->
+    <div
+      data-ec-block
+      data-ec-type="factual"
+      data-ec-title="Number of countries that voted for the resolution"
+      data-ec-reason="The initial version reported 15 countries; the correct number is 14, with one abstention."
+      data-ec-before="Fifteen countries voted for the resolution."
+      data-ec-after="Fourteen countries voted for the resolution, with one abstention."
+      data-ec-date="2026-04-17T14:20:00-04:00">
+    </div>
+
+    <!-- Article body with inline correction -->
+    <p>
+      At an extraordinary session held Friday morning, the UN Security Council approved a resolution calling for restraint from all parties involved in the conflict.
+      <span data-ec-inline
+            data-ec-before="Fifteen countries voted in favor"
+            data-ec-reason="Correction: there were 14 votes in favor, not 15.">Fourteen countries voted in favor</span>
+      of the resolution, with one abstention and no votes against.
+    </p>
+
+    <p>The resolution text demands an immediate end to hostilities and the return of the parties to the negotiating table. According to diplomatic sources consulted by this outlet, the vote reflects a rare alignment among permanent members of the Council.</p>
+
+    <!-- NEW CONTENT (yellow box; vanishes after 24h, text remains) -->
+    <div data-ec-new
+         data-ec-date="2026-04-17T14:20:00-04:00">
+      <p><strong>Update (2:20 p.m.):</strong> the State Department issued, in a statement released minutes after the vote, that the United States considers the result "a victory for multilateralism" and will continue to support diplomatic efforts at the Security Council.</p>
+    </div>
+
+    <!-- RIGHT OF REPLY (teal block, permanent) -->
+    <div data-ec-reply
+         data-ec-from="Senator Carlos Mendes (D-VA)"
+         data-ec-ruling="U.S. District Court for D.C. · case no. 1:26-cv-01234-JEB"
+         data-ec-date="2026-04-17T16:45:00-04:00"
+         data-ec-intro="This story publishes in full, below, the text submitted by the senator's office in exercise of the right of reply granted by court order. The ruling was issued under emergency relief."
+         data-ec-text="I want to make clear that my remarks were taken out of context. What I said was that the United States must adopt a firmer posture in multilateral institutions — there is, in my position, no gratuitous criticism of U.S. diplomacy."
+         data-ec-footer="Statement submitted by the senator's office and published in full, without editorial revision, as ordered by the court.">
+    </div>
+
+    <!-- REMOVED PASSAGE (gray dashed block; vanishes entirely after 24h) -->
+    <div data-ec-removed
+         data-ec-reason="unverifiability"
+         data-ec-flagged-by="World Desk Editor"
+         data-ec-date="2026-04-17T15:10:00-04:00"
+         data-ec-explanation="The first version attributed to 'diplomatic sources who asked for anonymity' the claim that at least two permanent members were prepared to veto the proposal if it included neutral observers. Because the newsroom was unable to confirm with any official source, the passage was removed."
+         data-ec-original="According to diplomatic sources who asked for anonymity, at least two permanent members are prepared to veto the proposal if it includes, in its final text, neutral observers appointed by third parties.">
+    </div>
+
+    <!-- Inline report error button -->
+    <p style="margin-top: 22px; text-align: right;">
+      <button data-ec-open-form class="ec-report-button">Report an error in this article</button>
+    </p>
+  </article>
+
+  <!-- DEMO: PATTERNS BEYOND ERROR CORRECTIONS -->
+  <div class="section-title">Patterns beyond error corrections</div>
+  <article class="demo">
+    <p style="font-size: 14px; color: #555; margin: 0 0 22px; line-height: 1.6;">
+      The plugin also supports three patterns that go beyond "fixing an error": <strong>new content</strong> (added after publication), <strong>right of reply</strong> (court-granted text) and <strong>removed passage</strong> (record of a deletion). Each below is a standalone demonstration, with the data attributes visible in the source.
+    </p>
+
+    <h3 style="font-size: 15px; margin: 18px 0 10px; color: #333; font-family: 'JetBrains Mono', ui-monospace, monospace;">→ New content · <code style="background: #f1f1ed; padding: 2px 6px; border-radius: 4px; color: #b0347d;">data-ec-new</code></h3>
+    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Yellow box with the "NEW · ADDED Xh AGO" label. After 24h, the visual marking disappears and the text remains as a normal paragraph. Bold lead-ins (<code style="background: #f1f1ed; padding: 1px 5px;">&lt;strong&gt;Update (HH:MM):&lt;/strong&gt;</code>) are also automatically stripped.</p>
+    <div data-ec-new
+         data-ec-date="2026-04-17T13:50:00-04:00">
+      <p><strong>Update (1:50 p.m.):</strong> international agencies confirmed that the U.N. Secretary-General will personally attend next week's session — information not available in the first version of this story, which named only the permanent representative.</p>
+    </div>
+
+    <h3 style="font-size: 15px; margin: 28px 0 10px; color: #333; font-family: 'JetBrains Mono', ui-monospace, monospace;">→ Removed passage · <code style="background: #f1f1ed; padding: 2px 6px; border-radius: 4px; color: #b0347d;">data-ec-removed</code></h3>
+    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Gray dashed block: records the removal with reason + collapsible original text. After 24h, the entire block (including the original text) disappears from the page, leaving the definitive version in the public archive.</p>
+    <div data-ec-removed
+         data-ec-reason="source protection"
+         data-ec-flagged-by="Editor-in-Chief"
+         data-ec-date="2026-04-17T16:00:00-04:00"
+         data-ec-explanation="The first version named a White House staffer who provided background information on the U.S. position. At the source's request, citing professional risk, the name was removed. The substantive information remains in the text."
+         data-ec-original="According to John Pereira, a White House staffer interviewed for this story, the U.S. position was coordinated with the President's office throughout Thursday.">
+    </div>
+
+    <h3 style="font-size: 15px; margin: 28px 0 10px; color: #333; font-family: 'JetBrains Mono', ui-monospace, monospace;">→ Right of reply · <code style="background: #f1f1ed; padding: 2px 6px; border-radius: 4px; color: #b0347d;">data-ec-reply</code></h3>
+    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Permanent teal block. Publishes the full text of a court-granted reply, with reference to the ruling and credit to the requesting source. Does not vanish — it is part of the public record.</p>
+    <div data-ec-reply
+         data-ec-from="Representative Ana Paula Souza (R-OR)"
+         data-ec-ruling="U.S. District Court for the District of Oregon · case no. 3:26-cv-00789-AJB"
+         data-ec-date="2026-04-17T18:00:00-04:00"
+         data-ec-intro="In compliance with the court ruling, this story publishes in full, below, the reply submitted by Representative Ana Paula Souza's office."
+         data-ec-text="The story implied my position contradicts U.S. diplomatic tradition. To set the record straight: I advocate deepening multilateralism, not retreating. I have offered collaboration to the House Foreign Affairs Committee and continue to keep open lines with the State Department for technical input."
+         data-ec-footer="Text submitted by the office and published without editorial revision, as ordered by the court.">
+    </div>
+  </article>
+
+  <!-- DEMO: CORRECTIONS ARCHIVE -->
+  <div class="section-title">Corrections archive</div>
+  <article class="demo">
+    <!-- Container where the plugin renders all recorded corrections -->
+    <div data-ec-list
+         data-ec-title="Corrections to this coverage"
+         data-ec-subtitle="Chronological, auditable list of every correction applied.">
+    </div>
+  </article>
+
+  <!-- DOCUMENTATION -->
+  <div class="section-title">How to install on any CMS</div>
+
+  <div class="docs">
+    <h3>1. Copy the CSS and JS</h3>
+    <p>Open this file in an editor and copy everything between the markers <code>▼ PLUGIN START ▼</code> and <code>▲ PLUGIN END ▲</code> — two blocks, one in <code>&lt;style&gt;</code> and one in <code>&lt;script&gt;</code>. Paste into your CMS templates (WordPress, Ghost, Drupal, Sanity, etc.) or host as two static files (<code>ec.css</code>, <code>ec.js</code>).</p>
+
+    <h3>2. Mark inline corrections in the text</h3>
+    <p>Whenever a word or phrase is corrected inside the article body, wrap the new text in a <code>&lt;span&gt;</code> with the attributes below. The plugin adds a visual highlight and a tooltip showing the original text.</p>
+    <pre><code>&lt;span data-ec-inline
+      data-ec-before="Fifteen countries voted in favor"
+      data-ec-reason="Correction: there were 14 votes, not 15."&gt;
+  Fourteen countries voted in favor
+&lt;/span&gt;</code></pre>
+
+    <h3>3. Insert a correction block</h3>
+    <p>At the top or bottom of the article, add a <code>&lt;div&gt;</code> with the correction metadata. The plugin renders a card with type badge, date, reason, and a before/after diff.</p>
+    <pre><code>&lt;div data-ec-block
+     data-ec-type="factual"
+     data-ec-title="Correct number of votes"
+     data-ec-reason="The initial version reported 15 countries; the correct number is 14."
+     data-ec-before="Fifteen countries voted in favor."
+     data-ec-after="Fourteen countries voted in favor."
+     data-ec-date="2026-04-17T14:20:00-04:00"&gt;
+&lt;/div&gt;</code></pre>
+    <p>Possible values for <code>data-ec-type</code>: <code>factual</code>, <code>spelling</code>, <code>imprecision</code>, <code>statement</code>, <code>other</code>. This taxonomy is aligned with the one used in the research landing page (see README): <em>factual</em> (red) for factual errors, <em>spelling</em> (indigo) for spelling/typo errors, <em>imprecision</em> (orange) for vague info or imprecise numbers, <em>statement</em> (purple) for errors in quotes or testimony, and <em>other</em> for cases that don't fit elsewhere.</p>
+
+    <h3>4. Show the corrections archive</h3>
+    <p>On an archive page or at the end of the article, include the container. The plugin lists every correction from the page and adds filters.</p>
+    <pre><code>&lt;div data-ec-list
+     data-ec-title="Corrections to this coverage"
+     data-ec-subtitle="Auditable list of every correction."&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>5. Report error button</h3>
+    <p>Anywhere in your template, add a <code>&lt;button&gt;</code> with the <code>data-ec-open-form</code> attribute. The plugin binds the click to open the modal.</p>
+    <pre><code>&lt;button data-ec-open-form class="ec-report-button"&gt;
+  Report an error
+&lt;/button&gt;</code></pre>
+    <p>For a fixed floating button, enable it in the JS config (see step 9).</p>
+
+    <h3>6. Right of reply</h3>
+    <p>When a source obtains a court-granted right of reply, use <code>data-ec-reply</code>. The plugin renders a permanent teal block with the full reply text, the court ruling reference, and credit lines.</p>
+    <pre><code>&lt;div data-ec-reply
+     data-ec-from="Senator X"
+     data-ec-ruling="U.S. District Court for D.C. · case no. ..."
+     data-ec-date="2026-04-17T16:45:00-04:00"
+     data-ec-intro="In compliance with the court order..."
+     data-ec-text="I want to make clear that my remarks were taken out of context..."
+     data-ec-footer="Published in full, without editorial revision, as ordered by the court."&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>7. Removed passage (vanishes after 24h)</h3>
+    <p>When a passage is removed after publication, use <code>data-ec-removed</code>. The plugin renders a gray dashed block with the reason and an option to expand the original text. <strong>Important:</strong> the entire block (including the original text) automatically disappears from the page after 24 hours, leaving only the definitive version in the public archive.</p>
+    <pre><code>&lt;div data-ec-removed
+     data-ec-reason="unverifiability"
+     data-ec-flagged-by="World Desk Editor"
+     data-ec-date="2026-04-17T15:10:00-04:00"
+     data-ec-explanation="The first version attributed to anonymous sources..."
+     data-ec-original="The verbatim text that used to be there."&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>8. New content / update (marking goes after 24h)</h3>
+    <p>To highlight a passage added after initial publication — a context update, a new quote, a new reaction — use <code>data-ec-new</code>. The plugin wraps the content in a yellow box with a "New · added Xh ago" badge. After 24 hours, the yellow box and the badge vanish; the <strong>text remains</strong> in the article flow (and any bold lead-in like "Update (HH:MM):" is also stripped so the text reads as regular article copy).</p>
+    <pre><code>&lt;div data-ec-new data-ec-date="2026-04-17T14:20:00-04:00"&gt;
+  &lt;p&gt;&lt;strong&gt;Update (2:20 p.m.):&lt;/strong&gt; new content here...&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>9. "Recently published" indicator (last 24h)</h3>
+    <p>The plugin automatically applies the <code>.ec-recent</code> class and a badge to corrections whose <code>data-ec-date</code> is within the last 24 hours. The same window governs the expiry of <code>data-ec-removed</code> and <code>data-ec-new</code> blocks. The window is configurable.</p>
+
+    <h3>10. Advanced configuration (optional)</h3>
+    <p>If you want to customize behavior, call <code>ErrorCorrection.init()</code> <em>before</em> the closing <code>&lt;/body&gt;</code>. All options are optional.</p>
+    <pre><code>&lt;script&gt;
+  ErrorCorrection.init({
+    // URL for error reports (POST JSON)
+    endpoint: "/api/report-error",
+
+    // "Recent" window in hours (default: 24)
+    recentWindowHours: 24,
+
+    // Show floating report button
+    floatingButton: true,
+    buttonPosition: "bottom-right", // or bottom-left, top-right, top-left
+
+    // Callback instead of (or alongside) endpoint
+    onReport: function(data) {
+      console.log("Error reported:", data);
+      // data: { type, description, email, url, sentAt }
+    },
+
+    // Override interface text (i18n / editorial voice)
+    labels: {
+      reportButton: "Report an error",
+      modalTitle: "Report an error",
+      modalSubtitle: "Every correction is reviewed by editors before publication.",
+      // ...other labels in ErrorCorrection.defaultLabels
+    }
+  });
+&lt;/script&gt;</code></pre>
+
+    <h3>11. Programmatic API</h3>
+    <p>If your CMS already stores corrections in a database, render them from JS instead of <code>data-ec-block</code>:</p>
+    <pre><code>ErrorCorrection.register([
+  {
+    type: "factual",
+    title: "Correct spelling of the spokesperson's name",
+    reason: "The initial text had 'John Smith' — the correct name is 'George Smith'.",
+    before: "John Smith",
+    after: "George Smith",
+    date: "2026-04-17T10:12:00-04:00"
+  }
+]);
+ErrorCorrection.renderList(document.querySelector("#corrections-archive"));</code></pre>
+  </div>
+
+  <div class="section-title">Accessibility and compatibility</div>
+  <div class="docs">
+    <ul>
+      <li>Keyboard navigation: modal opens with Enter/Space, closes with Esc.</li>
+      <li>Focus management: opening the modal moves focus to the first field; closing returns focus to the trigger.</li>
+      <li>No external dependencies (plain HTML, CSS, and JS). Works with any CMS.</li>
+      <li>The <code>.ec-*</code> and <code>data-ec-*</code> namespace prevents collisions with your existing theme.</li>
+      <li>Compatible with modern browsers (Chrome, Safari, Firefox, Edge — last 2 versions).</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- Floating button (created by the plugin if configured) -->
+
+<script>
+/* ================================================================
+ *  ▼ PLUGIN START — COPY FROM THIS LINE TO THE END MARKER ▼
+ *  Error Correction Plugin (JS)
+ *  Global API: window.ErrorCorrection
+ * ================================================================ */
+(function(global) {
+  "use strict";
+
+  // ---- Default labels (en-US). Override with init({ labels }) ----
+  var defaultLabels = {
+    reportButton: "Report an error",
+    floatingButton: "Report an error",
+    modalTitle: "Report an error",
+    modalSubtitle: "Help improve this article's accuracy. Your message will be reviewed by our editors.",
+    formType: "Type of error",
+    formDescription: "Description",
+    formDescriptionPlaceholder: "Describe what is incorrect and, if possible, cite a source.",
+    formEmail: "Email (optional)",
+    formEmailPlaceholder: "you@email.com",
+    formSubmit: "Send report",
+    formSubmitting: "Sending...",
+    formClose: "Close",
+    successTitle: "Report received",
+    successText: "Our editors will review and follow up if more information is needed.",
+    typeFactual: "Factual error",
+    typeSpelling: "Spelling / typo",
+    typeImprecision: "Imprecision (vague number or info)",
+    typeStatement: "Error in a quote or statement",
+    typeOther: "Other",
+    listEmpty: "No corrections recorded for this article.",
+    filterAll: "All",
+    filterRecent: "Recent (24h)",
+    filterFactual: "Factual",
+    filterSpelling: "Spelling",
+    filterImprecision: "Imprecision",
+    filterStatement: "Statement",
+    badgeRecent: "New"
+  };
+
+  // ---- Global configuration ----
+  var config = {
+    endpoint: null,
+    recentWindowHours: 24,
+    floatingButton: false,
+    buttonPosition: "bottom-right",
+    onReport: null,
+    labels: {}
+  };
+
+  // Registry of corrections (from data-attributes + API)
+  var registry = [];
+  var previousFocus = null;
+
+  // ---------- Utilities ----------
+  function label(key) {
+    return (config.labels && config.labels[key]) || defaultLabels[key] || key;
+  }
+  function htmlEscape(txt) {
+    if (txt == null) return "";
+    return String(txt)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function formatDate(isoOrString) {
+    if (!isoOrString) return "";
+    var d = new Date(isoOrString);
+    if (isNaN(d.getTime())) return isoOrString;
+    try {
+      return d.toLocaleString("en-US", {
+        year: "numeric", month: "short", day: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      });
+    } catch (e) { return d.toISOString(); }
+  }
+  function isRecent(isoOrString) {
+    if (!isoOrString) return false;
+    var d = new Date(isoOrString);
+    if (isNaN(d.getTime())) return false;
+    var now = Date.now();
+    var threshold = config.recentWindowHours * 60 * 60 * 1000;
+    return (now - d.getTime()) <= threshold && (now - d.getTime()) >= 0;
+  }
+  function createEl(tag, classes, innerHTML) {
+    var el = document.createElement(tag);
+    if (classes) el.className = classes;
+    if (innerHTML != null) el.innerHTML = innerHTML;
+    return el;
+  }
+
+  // ---------- Inline correction transformation ----------
+  function transformInline() {
+    var spans = document.querySelectorAll("[data-ec-inline]:not([data-ec-ready])");
+    spans.forEach(function(span) {
+      span.classList.add("ec-inline");
+      span.setAttribute("data-ec-ready", "true");
+      span.setAttribute("tabindex", "0");
+      var before = span.getAttribute("data-ec-before") || "";
+      var reason = span.getAttribute("data-ec-reason") || "";
+      var tooltipHTML = "";
+      if (reason) tooltipHTML += "<strong>Correction.</strong> " + htmlEscape(reason);
+      if (before) tooltipHTML += "<span class=\"ec-tooltip-before\">Before: " + htmlEscape(before) + "</span>";
+      if (tooltipHTML) {
+        span.setAttribute("aria-label", "Correction. Before: " + before + (reason ? ". Reason: " + reason : ""));
+        var showTooltip = function() {
+          hideAllTooltips();
+          var tip = createEl("span", "ec-inline-tooltip", tooltipHTML);
+          span.appendChild(tip);
+        };
+        span.addEventListener("mouseenter", showTooltip);
+        span.addEventListener("focus", showTooltip);
+        span.addEventListener("mouseleave", hideAllTooltips);
+        span.addEventListener("blur", hideAllTooltips);
+      }
+    });
+  }
+  function hideAllTooltips() {
+    document.querySelectorAll(".ec-inline-tooltip").forEach(function(t) { t.remove(); });
+  }
+
+  // ---------- Correction block transformation ----------
+  function transformBlocks() {
+    var blocks = document.querySelectorAll("[data-ec-block]:not([data-ec-ready])");
+    blocks.forEach(function(block) {
+      var data = readElementData(block);
+      block.setAttribute("data-ec-ready", "true");
+      registry.push(data);
+      renderBlockIn(block, data);
+    });
+  }
+  function readElementData(el) {
+    return {
+      type: el.getAttribute("data-ec-type") || "other",
+      title: el.getAttribute("data-ec-title") || "",
+      reason: el.getAttribute("data-ec-reason") || "",
+      before: el.getAttribute("data-ec-before") || "",
+      after: el.getAttribute("data-ec-after") || "",
+      date: el.getAttribute("data-ec-date") || ""
+    };
+  }
+  function typeLabel(type) {
+    var map = {
+      factual: "typeFactual",
+      spelling: "typeSpelling",
+      imprecision: "typeImprecision",
+      statement: "typeStatement",
+      other: "typeOther"
+    };
+    return label(map[type] || "typeOther");
+  }
+  function renderBlockIn(element, data) {
+    var recent = isRecent(data.date);
+    element.className = "ec-block" + (recent ? " ec-recent" : "");
+    element.innerHTML = [
+      '<div class="ec-block-header">',
+        '<span class="ec-badge ec-type-' + htmlEscape(data.type) + '">' + htmlEscape(typeLabel(data.type)) + '</span>',
+        recent ? '<span class="ec-badge ec-badge-recent">' + htmlEscape(label("badgeRecent")) + '</span>' : '',
+        data.date ? '<span class="ec-block-date">' + htmlEscape(formatDate(data.date)) + '</span>' : '',
+      '</div>',
+      data.title ? '<div class="ec-block-title">' + htmlEscape(data.title) + '</div>' : '',
+      data.reason ? '<p class="ec-block-reason">' + htmlEscape(data.reason) + '</p>' : '',
+      (data.before || data.after) ? (
+        '<div class="ec-diff">' +
+          (data.before ? '<div class="ec-diff-before">' + htmlEscape(data.before) + '</div>' : '') +
+          (data.after  ? '<div class="ec-diff-after">'  + htmlEscape(data.after)  + '</div>' : '') +
+        '</div>'
+      ) : ''
+    ].join("");
+  }
+
+  // ---------- List/archive rendering ----------
+  var currentFilter = "all";
+  function transformLists() {
+    var lists = document.querySelectorAll("[data-ec-list]:not([data-ec-ready])");
+    lists.forEach(function(container) {
+      container.setAttribute("data-ec-ready", "true");
+      renderList(container);
+    });
+  }
+  function renderList(container) {
+    var title = container.getAttribute("data-ec-title") || "Corrections";
+    var subtitle = container.getAttribute("data-ec-subtitle") || "";
+    container.classList.add("ec-list");
+    container.innerHTML = [
+      '<div class="ec-list-header">',
+        '<div>',
+          '<h3 class="ec-list-title">' + htmlEscape(title) + '</h3>',
+          subtitle ? '<p class="ec-list-subtitle">' + htmlEscape(subtitle) + '</p>' : '',
+        '</div>',
+        '<span class="ec-list-subtitle">' + registry.length + ' recorded</span>',
+      '</div>',
+      '<div class="ec-list-filters" role="tablist">',
+        filterButton("all", label("filterAll")),
+        filterButton("recent", label("filterRecent")),
+        filterButton("factual", label("filterFactual")),
+        filterButton("spelling", label("filterSpelling")),
+        filterButton("imprecision", label("filterImprecision")),
+        filterButton("statement", label("filterStatement")),
+      '</div>',
+      '<div class="ec-list-items"></div>'
+    ].join("");
+
+    // Wire up filters
+    container.querySelectorAll(".ec-filter").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        currentFilter = btn.getAttribute("data-ec-filter-value");
+        container.querySelectorAll(".ec-filter").forEach(function(b) {
+          b.classList.toggle("ec-filter-active", b === btn);
+        });
+        renderItems(container);
+      });
+    });
+    renderItems(container);
+  }
+  function filterButton(value, text) {
+    var active = currentFilter === value ? " ec-filter-active" : "";
+    return '<button type="button" class="ec-filter' + active + '" data-ec-filter-value="' + value + '">' + htmlEscape(text) + '</button>';
+  }
+  function renderItems(container) {
+    var itemsWrap = container.querySelector(".ec-list-items");
+    if (!itemsWrap) return;
+    var filtered = registry.filter(function(c) {
+      if (currentFilter === "all") return true;
+      if (currentFilter === "recent") return isRecent(c.date);
+      return c.type === currentFilter;
+    });
+    if (filtered.length === 0) {
+      itemsWrap.innerHTML = '<div class="ec-list-empty">' + htmlEscape(label("listEmpty")) + '</div>';
+      return;
+    }
+    // Most recent first
+    filtered.sort(function(a, b) {
+      return new Date(b.date || 0) - new Date(a.date || 0);
+    });
+    itemsWrap.innerHTML = "";
+    filtered.forEach(function(data) {
+      var item = createEl("div", "ec-list-item");
+      renderBlockIn(item, data);
+      itemsWrap.appendChild(item);
+    });
+  }
+
+  // ---------- Report error modal ----------
+  var overlay = null;
+
+  function buildModal() {
+    if (overlay) return overlay;
+    overlay = createEl("div", "ec-modal-overlay");
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.innerHTML = [
+      '<div class="ec-modal">',
+        '<div class="ec-modal-header">',
+          '<div>',
+            '<h3 class="ec-modal-title">' + htmlEscape(label("modalTitle")) + '</h3>',
+            '<p class="ec-modal-subtitle">' + htmlEscape(label("modalSubtitle")) + '</p>',
+          '</div>',
+          '<button type="button" class="ec-modal-close" aria-label="' + htmlEscape(label("formClose")) + '">×</button>',
+        '</div>',
+        '<form class="ec-form" novalidate>',
+          '<div class="ec-form-group">',
+            '<label class="ec-form-label">' + htmlEscape(label("formType")) + '</label>',
+            '<div class="ec-form-radio-group">',
+              radio("type", "factual", label("typeFactual"), true),
+              radio("type", "spelling", label("typeSpelling")),
+              radio("type", "imprecision", label("typeImprecision")),
+              radio("type", "statement", label("typeStatement")),
+              radio("type", "other", label("typeOther")),
+            '</div>',
+          '</div>',
+          '<div class="ec-form-group">',
+            '<label class="ec-form-label" for="ec-description">' + htmlEscape(label("formDescription")) + '</label>',
+            '<textarea id="ec-description" name="description" class="ec-form-textarea" required placeholder="' + htmlEscape(label("formDescriptionPlaceholder")) + '"></textarea>',
+          '</div>',
+          '<div class="ec-form-group">',
+            '<label class="ec-form-label" for="ec-email">' + htmlEscape(label("formEmail")) + '</label>',
+            '<input id="ec-email" name="email" type="email" class="ec-form-input" placeholder="' + htmlEscape(label("formEmailPlaceholder")) + '">',
+          '</div>',
+          '<button type="submit" class="ec-form-submit">' + htmlEscape(label("formSubmit")) + '</button>',
+        '</form>',
+      '</div>'
+    ].join("");
+    document.body.appendChild(overlay);
+
+    // Events
+    overlay.addEventListener("click", function(e) {
+      if (e.target === overlay) closeModal();
+    });
+    overlay.querySelector(".ec-modal-close").addEventListener("click", closeModal);
+    overlay.querySelectorAll(".ec-form-radio input").forEach(function(inp) {
+      inp.addEventListener("change", updateRadioStyle);
+    });
+    updateRadioStyle();
+    overlay.querySelector(".ec-form").addEventListener("submit", handleSubmit);
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && overlay.classList.contains("ec-open")) closeModal();
+    });
+    return overlay;
+  }
+  function radio(name, value, labelText, checked) {
+    return (
+      '<label class="ec-form-radio">' +
+        '<input type="radio" name="' + name + '" value="' + value + '"' + (checked ? ' checked' : '') + '>' +
+        '<span>' + htmlEscape(labelText) + '</span>' +
+      '</label>'
+    );
+  }
+  function updateRadioStyle() {
+    overlay.querySelectorAll(".ec-form-radio").forEach(function(lbl) {
+      var inp = lbl.querySelector("input");
+      lbl.classList.toggle("ec-selected", inp && inp.checked);
+    });
+  }
+  function openModal() {
+    buildModal();
+    previousFocus = document.activeElement;
+    overlay.classList.add("ec-open");
+    var first = overlay.querySelector(".ec-form-textarea");
+    if (first) setTimeout(function() { first.focus(); }, 50);
+  }
+  function closeModal() {
+    if (!overlay) return;
+    overlay.classList.remove("ec-open");
+    // Reset success state for next opening
+    setTimeout(function() {
+      var form = overlay.querySelector(".ec-form");
+      var success = overlay.querySelector(".ec-form-success");
+      if (success) {
+        success.remove();
+        form.style.display = "";
+        form.reset();
+        updateRadioStyle();
+      }
+    }, 300);
+    if (previousFocus && previousFocus.focus) previousFocus.focus();
+  }
+  function handleSubmit(e) {
+    e.preventDefault();
+    var form = e.target;
+    var submit = form.querySelector(".ec-form-submit");
+    var data = {
+      type: (form.querySelector("input[name=type]:checked") || {}).value || "other",
+      description: form.querySelector("[name=description]").value.trim(),
+      email: form.querySelector("[name=email]").value.trim(),
+      url: location.href,
+      sentAt: new Date().toISOString()
+    };
+    if (!data.description) {
+      form.querySelector("[name=description]").focus();
+      return;
+    }
+    submit.disabled = true;
+    submit.textContent = label("formSubmitting");
+
+    var promise;
+    if (typeof config.onReport === "function") {
+      try {
+        var r = config.onReport(data);
+        promise = (r && typeof r.then === "function") ? r : Promise.resolve(r);
+      } catch (err) { promise = Promise.reject(err); }
+    } else if (config.endpoint) {
+      promise = fetch(config.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+    } else {
+      // No endpoint or callback: simulate success (demo mode).
+      promise = Promise.resolve();
+    }
+
+    Promise.resolve(promise).then(function() {
+      showSuccess(form);
+    }).catch(function() {
+      submit.disabled = false;
+      submit.textContent = label("formSubmit");
+      alert("Could not send right now. Please try again in a moment.");
+    });
+  }
+  function showSuccess(form) {
+    form.style.display = "none";
+    var success = createEl("div", "ec-form-success",
+      '<div class="ec-form-success-icon">✓</div>' +
+      '<p class="ec-form-success-title">' + htmlEscape(label("successTitle")) + '</p>' +
+      '<p class="ec-form-success-text">' + htmlEscape(label("successText")) + '</p>'
+    );
+    form.parentNode.appendChild(success);
+    setTimeout(closeModal, 2600);
+  }
+
+  // ---------- Floating button ----------
+  function mountFloatingButton() {
+    if (!config.floatingButton) return;
+    if (document.querySelector(".ec-button-floating")) return;
+    var btn = createEl("button", "ec-report-button ec-button-floating ec-pos-" + config.buttonPosition,
+      htmlEscape(label("floatingButton")));
+    btn.type = "button";
+    btn.addEventListener("click", openModal);
+    document.body.appendChild(btn);
+  }
+
+  // ---------- Bind data-ec-open-form buttons ----------
+  function bindButtons() {
+    document.querySelectorAll("[data-ec-open-form]:not([data-ec-ready])").forEach(function(btn) {
+      btn.setAttribute("data-ec-ready", "true");
+      if (!btn.textContent.trim()) btn.textContent = label("reportButton");
+      if (!btn.classList.contains("ec-report-button")) btn.classList.add("ec-report-button");
+      btn.addEventListener("click", function(e) {
+        e.preventDefault();
+        openModal();
+      });
+    });
+  }
+
+  // ---------- Right of reply ----------
+  function transformReplies() {
+    document.querySelectorAll("[data-ec-reply]:not([data-ec-ready])").forEach(function(el) {
+      el.setAttribute("data-ec-ready", "true");
+      el.classList.add("ec-reply");
+      var from = el.getAttribute("data-ec-from") || "";
+      var ruling = el.getAttribute("data-ec-ruling") || "";
+      var dateAttr = el.getAttribute("data-ec-date") || "";
+      var intro = el.getAttribute("data-ec-intro") || "";
+      var text = el.getAttribute("data-ec-text") || "";
+      var footer = el.getAttribute("data-ec-footer") || "";
+      var metaParts = [];
+      if (from) metaParts.push("<strong>" + htmlEscape(from) + "</strong>");
+      if (dateAttr) metaParts.push("published on <strong>" + htmlEscape(formatDate(dateAttr)) + "</strong>");
+      if (ruling) metaParts.push("in compliance with: <strong>" + htmlEscape(ruling) + "</strong>");
+      el.innerHTML = [
+        metaParts.length ? '<div class="ec-reply-meta">' + metaParts.join(" · ") + '</div>' : '',
+        intro ? '<p class="ec-reply-intro">' + htmlEscape(intro) + '</p>' : '',
+        text ? '<blockquote class="ec-reply-body">' + htmlEscape(text) + '</blockquote>' : '',
+        footer ? '<div class="ec-reply-footer">' + htmlEscape(footer) + '</div>' : ''
+      ].join("");
+    });
+  }
+
+  // ---------- Removed passage (vanishes entirely after 24h) ----------
+  function transformRemoved() {
+    document.querySelectorAll("[data-ec-removed]:not([data-ec-ready])").forEach(function(el) {
+      el.setAttribute("data-ec-ready", "true");
+      el.classList.add("ec-removed");
+      var reason = el.getAttribute("data-ec-reason") || "not specified";
+      var flaggedBy = el.getAttribute("data-ec-flagged-by") || "";
+      var dateAttr = el.getAttribute("data-ec-date") || "";
+      var explanation = el.getAttribute("data-ec-explanation") || "";
+      var original = el.getAttribute("data-ec-original") || "";
+      var metaParts = [];
+      if (dateAttr) metaParts.push("<strong>" + htmlEscape(formatDate(dateAttr)) + "</strong>");
+      metaParts.push("reason: <strong>" + htmlEscape(reason) + "</strong>");
+      if (flaggedBy) metaParts.push("flagged by <strong>" + htmlEscape(flaggedBy) + "</strong>");
+      el.innerHTML = [
+        '<div class="ec-removed-header">',
+          '<span class="ec-removed-badge">⊘ Removed passage</span>',
+          '<span class="ec-removed-meta">' + metaParts.join(" · ") + '</span>',
+        '</div>',
+        explanation ? '<p class="ec-removed-explanation">' + htmlEscape(explanation) + '</p>' : '',
+        original ? (
+          '<details class="ec-removed-toggle">' +
+            '<summary>View removed passage (original text)</summary>' +
+            '<blockquote class="ec-removed-original">' + htmlEscape(original) + '</blockquote>' +
+          '</details>'
+        ) : ''
+      ].join("");
+    });
+  }
+
+  // ---------- New content (yellow box; marking goes after 24h, text stays) ----------
+  function transformNew() {
+    document.querySelectorAll("[data-ec-new]:not([data-ec-ready])").forEach(function(el) {
+      el.setAttribute("data-ec-ready", "true");
+      el.classList.add("ec-new");
+      var dateAttr = el.getAttribute("data-ec-date") || "";
+      var hours = hoursSince(dateAttr);
+      var topLabel;
+      if (hours == null) {
+        topLabel = "New";
+      } else if (hours < 1) {
+        topLabel = "New · added " + Math.max(1, Math.round(hours * 60)) + "min ago";
+      } else if (hours < 2) {
+        topLabel = "New · added 1h ago";
+      } else {
+        topLabel = "New · added " + Math.round(hours) + "h ago";
+      }
+      el.setAttribute("data-ec-label", topLabel);
+    });
+  }
+
+  // ---------- 24h rules (embedded) ----------
+  function hoursSince(isoOrString) {
+    if (!isoOrString) return null;
+    var d = new Date(isoOrString);
+    if (isNaN(d.getTime())) return null;
+    return (Date.now() - d.getTime()) / 3600000;
+  }
+
+  function apply24hRules() {
+    var window24 = config.recentWindowHours;
+
+    // Removed passage: entire block goes away
+    document.querySelectorAll(".ec-removed[data-ec-date]").forEach(function(el) {
+      var h = hoursSince(el.getAttribute("data-ec-date"));
+      if (h != null && h > window24) el.style.display = "none";
+    });
+
+    // New content: marking goes, text and bold lead-ins are stripped
+    document.querySelectorAll(".ec-new[data-ec-date]").forEach(function(el) {
+      var h = hoursSince(el.getAttribute("data-ec-date"));
+      if (h != null && h > window24) {
+        el.classList.remove("ec-new");
+        el.removeAttribute("data-ec-label");
+        el.querySelectorAll("p").forEach(function(p) {
+          var cleaned = p.innerHTML.replace(/^\s*<strong>[^<]*:\s*<\/strong>\s*/i, '');
+          if (cleaned !== p.innerHTML) {
+            p.innerHTML = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+          }
+        });
+      }
+    });
+  }
+
+  // ---------- Boot ----------
+  function processPage() {
+    transformInline();
+    transformBlocks();
+    transformReplies();
+    transformRemoved();
+    transformNew();
+    transformLists();
+    apply24hRules();
+    bindButtons();
+  }
+
+  function init(options) {
+    options = options || {};
+    Object.keys(options).forEach(function(k) {
+      if (k === "labels" && options.labels) {
+        config.labels = Object.assign({}, config.labels, options.labels);
+      } else {
+        config[k] = options[k];
+      }
+    });
+    mountFloatingButton();
+    processPage();
+  }
+
+  // Public API
+  var API = {
+    init: init,
+    config: config,
+    defaultLabels: defaultLabels,
+    register: function(corrections) {
+      if (!Array.isArray(corrections)) corrections = [corrections];
+      corrections.forEach(function(c) { registry.push(c); });
+      // Refresh any lists already rendered
+      document.querySelectorAll("[data-ec-list][data-ec-ready]").forEach(function(c) {
+        renderList(c);
+      });
+    },
+    renderList: function(container) { renderList(container); },
+    openForm: openModal,
+    closeForm: closeModal,
+    reprocess: processPage,
+    setEndpoint: function(url) { config.endpoint = url; },
+    onReport: function(cb) { config.onReport = cb; }
+  };
+  global.ErrorCorrection = API;
+
+  // Auto-init when the DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", processPage);
+  } else {
+    processPage();
+  }
+})(window);
+
+/* ================================================================
+ *  ▲ END OF PLUGIN JS ▲
+ * ================================================================ */
+
+/* ==== Configuration for this DEMO page (not part of the plugin) ==== */
+ErrorCorrection.init({
+  floatingButton: true,
+  buttonPosition: "bottom-right",
+  onReport: function(data) {
+    console.log("[DEMO] Error reported:", data);
+    return Promise.resolve();
+  }
+});
+
+// Register a few more example corrections directly via the API
+ErrorCorrection.register([
+  {
+    type: "spelling",
+    title: "Spelling correction in third paragraph",
+    reason: "The Secretary's first name appeared as 'Anthony'; the correct spelling is 'Antony'.",
+    before: "Anthony Blinken",
+    after: "Antony Blinken",
+    date: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString() // 5h ago
+  },
+  {
+    type: "imprecision",
+    title: "Number of displaced people made specific",
+    reason: "The original version used the vague 'more than 400,000'. The exact figure from the U.N. bulletin is 420,000.",
+    before: "more than 400,000 internally displaced people",
+    after: "420,000 internally displaced people",
+    date: "2026-04-16T17:30:00-04:00"
+  },
+  {
+    type: "statement",
+    title: "Direct quote from the Ambassador added",
+    reason: "The original version paraphrased the Ambassador's statement. After a request from the Ambassador's office, we replaced it with the literal quote.",
+    before: "The Ambassador stressed multilateralism.",
+    after: "'The position of the United States will remain firm in defense of international humanitarian law, but always within the limits of constructive dialogue,' the Ambassador said.",
+    date: "2026-04-15T10:00:00-04:00"
+  }
+]);
+// Re-render the list after registering corrections above
+document.querySelectorAll("[data-ec-list]").forEach(function(c) {
+  ErrorCorrection.renderList(c);
+});
+</script>
+</body>
+</html>
