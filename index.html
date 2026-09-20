@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plugin de Correção de Erros · Demo e Documentação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+ * PÁGINA DE DEMO (estilos apenas da demo, NÃO fazem parte do plugin)
+ * ================================================================ */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: #f6f6f4;
+  color: #1a1a1a;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 40px 24px 120px;
+}
+.page-hero {
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 24px;
+  margin-bottom: 28px;
+}
+.page-hero .tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #777;
+  margin-bottom: 10px;
+}
+.page-hero h1 {
+  font-family: 'Inter', serif;
+  font-size: 36px;
+  line-height: 1.15;
+  margin: 0 0 10px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.page-hero p {
+  font-size: 16.5px;
+  color: #444;
+  margin: 0;
+  max-width: 640px;
+}
+article.demo {
+  background: white;
+  border: 1px solid #e5e5e2;
+  border-radius: 10px;
+  padding: 28px 32px 32px;
+  margin-bottom: 40px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+article.demo h2.demo-headline {
+  font-size: 26px;
+  line-height: 1.25;
+  margin: 0 0 8px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+article.demo .demo-byline {
+  font-size: 13px;
+  color: #777;
+  margin: 0 0 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+article.demo p {
+  font-size: 16px;
+  margin: 0 0 14px;
+}
+.section-title {
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #777;
+  border-top: 1px solid #d4d4d4;
+  padding-top: 20px;
+  margin-top: 44px;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+.docs {
+  background: white;
+  border: 1px solid #e5e5e2;
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+}
+.docs h3 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+.docs h3:not(:first-child) { margin-top: 26px; }
+.docs p { margin: 0 0 10px; font-size: 15px; }
+.docs ul { padding-left: 20px; margin: 0 0 10px; }
+.docs li { margin-bottom: 6px; font-size: 15px; }
+.docs code, .docs pre {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+}
+.docs code {
+  background: #f1f1ed;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #b0347d;
+}
+.docs pre {
+  background: #fafaf8;
+  border: 1px solid #eee;
+  border-left: 3px solid #b0347d;
+  border-radius: 6px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  line-height: 1.55;
+  color: #222;
+}
+.docs pre code { background: transparent; padding: 0; color: inherit; }
+
+/* ================================================================
+ *  ▼ INÍCIO DO PLUGIN — COPIE DESTA LINHA ATÉ O FIM DO BLOCO ▼
+ *  Plugin de Correção de Erros (CSS)
+ *  Namespace: .cde-*
+ * ================================================================ */
+
+:root {
+  --cde-font: 'Inter', -apple-system, system-ui, sans-serif;
+  --cde-text: #1a1a1a;
+  --cde-muted: #6b6b6b;
+  --cde-border: #e5e5e2;
+  --cde-bg: #ffffff;
+  --cde-bg-alt: #fafaf8;
+  --cde-accent: #b0347d;            /* cor principal (editável) */
+  --cde-accent-soft: #fbecf4;
+  --cde-recente-bg: #fff5d9;        /* amarelo para <24h */
+  --cde-recente-border: #e6c555;
+  --cde-recente-text: #7a5800;
+  --cde-antes-bg: #fdecec;          /* vermelho suave para "antes" */
+  --cde-antes-text: #8a1f1f;
+  --cde-antes-border: #f2b8b8;
+  --cde-depois-bg: #e8f5ea;         /* verde suave para "depois" */
+  --cde-depois-text: #1e5a2a;
+  --cde-depois-border: #a8d5b0;
+  --cde-radius: 8px;
+  --cde-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* ---------- Correção inline (em meio ao texto do artigo) ---------- */
+.cde-inline {
+  background: var(--cde-recente-bg);
+  border-bottom: 2px solid var(--cde-recente-border);
+  padding: 1px 3px;
+  border-radius: 3px 3px 0 0;
+  cursor: help;
+  font-style: normal;
+  position: relative;
+  transition: background 0.15s;
+}
+.cde-inline:hover { background: #fce9b0; }
+.cde-inline::after {
+  content: "✎";
+  font-size: 0.72em;
+  color: var(--cde-recente-text);
+  margin-left: 3px;
+  font-weight: 700;
+}
+.cde-inline-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  background: #1a1a1a;
+  color: white;
+  font-size: 12.5px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 6px;
+  min-width: 220px;
+  max-width: 320px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  z-index: 50;
+  font-style: normal;
+  font-weight: 400;
+  white-space: normal;
+}
+.cde-inline-tooltip strong { color: var(--cde-recente-border); font-weight: 700; }
+.cde-inline-tooltip .cde-tooltip-antes {
+  display: block;
+  text-decoration: line-through;
+  color: #ff9a9a;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.cde-inline-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 14px;
+  border: 6px solid transparent;
+  border-top-color: #1a1a1a;
+}
+
+/* ---------- Bloco de errata (topo ou rodapé do artigo) ---------- */
+.cde-bloco {
+  background: var(--cde-bg);
+  border: 1px solid var(--cde-border);
+  border-left: 4px solid var(--cde-accent);
+  border-radius: var(--cde-radius);
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-family: var(--cde-font);
+  color: var(--cde-text);
+}
+.cde-bloco.cde-recente {
+  border-left-color: var(--cde-recente-border);
+  background: linear-gradient(to right, var(--cde-recente-bg) 0%, var(--cde-bg) 40%);
+}
+.cde-bloco-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--cde-muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+.cde-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--cde-accent-soft);
+  color: var(--cde-accent);
+}
+/* Paleta alinhada com a landing page (factual/grafia/imprecisão/declaração/outro) */
+.cde-badge.cde-tipo-factual { background: #fef2f2; color: #dc2626; }
+.cde-badge.cde-tipo-grafia { background: #eef2ff; color: #6366f1; }
+.cde-badge.cde-tipo-imprecisao { background: #fff7ed; color: #ea580c; }
+.cde-badge.cde-tipo-declaracao { background: #faf5ff; color: #9333ea; }
+.cde-badge.cde-tipo-outro { background: #eee; color: #444; }
+.cde-badge-recente {
+  background: var(--cde-recente-bg);
+  color: var(--cde-recente-text);
+  border: 1px solid var(--cde-recente-border);
+}
+.cde-bloco-data { font-variant-numeric: tabular-nums; }
+.cde-bloco-titulo {
+  font-size: 15.5px;
+  font-weight: 600;
+  margin: 2px 0 4px;
+  line-height: 1.35;
+}
+.cde-bloco-motivo {
+  font-size: 14px;
+  color: #3a3a3a;
+  margin: 0 0 12px;
+  line-height: 1.55;
+}
+.cde-diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.cde-diff-antes, .cde-diff-depois {
+  font-size: 13.5px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  line-height: 1.5;
+  position: relative;
+  padding-top: 24px;
+}
+.cde-diff-antes {
+  background: var(--cde-antes-bg);
+  color: var(--cde-antes-text);
+  border: 1px solid var(--cde-antes-border);
+  text-decoration: line-through;
+  text-decoration-color: rgba(138,31,31,0.4);
+}
+.cde-diff-depois {
+  background: var(--cde-depois-bg);
+  color: var(--cde-depois-text);
+  border: 1px solid var(--cde-depois-border);
+  font-weight: 500;
+}
+.cde-diff-antes::before, .cde-diff-depois::before {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.cde-diff-antes::before { content: "Antes"; color: var(--cde-antes-text); opacity: 0.7; }
+.cde-diff-depois::before { content: "Depois"; color: var(--cde-depois-text); opacity: 0.7; }
+@media (max-width: 560px) {
+  .cde-diff { grid-template-columns: 1fr; }
+}
+
+/* ---------- Arquivo de correções (lista completa) ---------- */
+.cde-lista {
+  font-family: var(--cde-font);
+  color: var(--cde-text);
+}
+.cde-lista-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.cde-lista-titulo {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+.cde-lista-subtitulo {
+  font-size: 13.5px;
+  color: var(--cde-muted);
+  margin: 2px 0 0;
+}
+.cde-lista-filtros {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px;
+  background: var(--cde-bg-alt);
+  border: 1px solid var(--cde-border);
+  border-radius: var(--cde-radius);
+  margin-bottom: 12px;
+}
+.cde-filtro {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--cde-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.cde-filtro:hover { background: white; color: var(--cde-text); border-color: var(--cde-border); }
+.cde-filtro.cde-filtro-ativo {
+  background: var(--cde-text);
+  color: white;
+  border-color: var(--cde-text);
+}
+.cde-lista-vazia {
+  padding: 24px;
+  text-align: center;
+  color: var(--cde-muted);
+  font-size: 14px;
+  background: var(--cde-bg-alt);
+  border: 1px dashed var(--cde-border);
+  border-radius: var(--cde-radius);
+}
+.cde-lista-item { margin-bottom: 12px; }
+.cde-lista-item:last-child { margin-bottom: 0; }
+
+/* ---------- Botão de reportar erro ---------- */
+.cde-botao-reportar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cde-bg);
+  color: var(--cde-text);
+  border: 1px solid var(--cde-border);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-family: var(--cde-font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--cde-shadow);
+}
+.cde-botao-reportar:hover {
+  background: var(--cde-text);
+  color: white;
+  border-color: var(--cde-text);
+}
+.cde-botao-reportar::before { content: "⚑"; font-size: 14px; }
+
+.cde-botao-flutuante {
+  position: fixed;
+  z-index: 9998;
+  background: var(--cde-text);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+}
+.cde-botao-flutuante:hover { background: var(--cde-accent); color: white; }
+.cde-botao-flutuante.cde-pos-bottom-right { bottom: 20px; right: 20px; }
+.cde-botao-flutuante.cde-pos-bottom-left { bottom: 20px; left: 20px; }
+.cde-botao-flutuante.cde-pos-top-right { top: 20px; right: 20px; }
+.cde-botao-flutuante.cde-pos-top-left { top: 20px; left: 20px; }
+
+/* ---------- Modal de reportar erro ---------- */
+.cde-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20,20,20,0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  overflow-y: auto;
+  font-family: var(--cde-font);
+}
+.cde-modal-overlay.cde-aberto {
+  opacity: 1;
+  pointer-events: auto;
+}
+.cde-modal {
+  background: var(--cde-bg);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+  transform: translateY(-10px);
+  transition: transform 0.2s;
+}
+.cde-modal-overlay.cde-aberto .cde-modal { transform: translateY(0); }
+.cde-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 22px 8px;
+}
+.cde-modal-titulo {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+}
+.cde-modal-subtitulo {
+  font-size: 13.5px;
+  color: var(--cde-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+.cde-modal-fechar {
+  background: transparent;
+  border: none;
+  color: var(--cde-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin: -4px -8px 0 0;
+  border-radius: 4px;
+}
+.cde-modal-fechar:hover { background: var(--cde-bg-alt); color: var(--cde-text); }
+
+.cde-form { padding: 12px 22px 22px; }
+.cde-form-grupo { margin-bottom: 16px; }
+.cde-form-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--cde-muted);
+  margin-bottom: 6px;
+}
+.cde-form-input, .cde-form-textarea, .cde-form-select {
+  width: 100%;
+  border: 1px solid var(--cde-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--cde-text);
+  background: var(--cde-bg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.cde-form-input:focus, .cde-form-textarea:focus, .cde-form-select:focus {
+  outline: none;
+  border-color: var(--cde-accent);
+  box-shadow: 0 0 0 3px var(--cde-accent-soft);
+}
+.cde-form-textarea { resize: vertical; min-height: 90px; }
+
+.cde-form-radio-grupo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cde-form-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--cde-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 13.5px;
+  transition: all 0.15s;
+  background: var(--cde-bg);
+}
+.cde-form-radio:hover { border-color: var(--cde-accent); background: var(--cde-accent-soft); }
+.cde-form-radio input { margin: 0; accent-color: var(--cde-accent); }
+.cde-form-radio.cde-selecionado {
+  border-color: var(--cde-accent);
+  background: var(--cde-accent-soft);
+  color: var(--cde-accent);
+  font-weight: 600;
+}
+@media (max-width: 460px) {
+  .cde-form-radio-grupo { grid-template-columns: 1fr; }
+}
+
+.cde-form-submit {
+  width: 100%;
+  background: var(--cde-text);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.cde-form-submit:hover { background: var(--cde-accent); }
+.cde-form-submit:disabled { background: #bbb; cursor: not-allowed; }
+
+.cde-form-sucesso {
+  padding: 28px 24px;
+  text-align: center;
+  color: var(--cde-depois-text);
+}
+.cde-form-sucesso-icone {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+.cde-form-sucesso-titulo {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--cde-text);
+}
+.cde-form-sucesso-texto {
+  font-size: 14px;
+  color: var(--cde-muted);
+  margin: 0;
+}
+
+/* ================================================================
+ *  PADRÕES ALÉM DAS CORREÇÕES DE ERRO
+ *  - cde-resposta : direito de resposta (teal, permanente)
+ *  - cde-excluido : trecho excluído (cinza tracejado, some 24h)
+ *  - cde-novo     : conteúdo novo / atualização (amarelo, marcação some 24h, texto fica)
+ * ================================================================ */
+:root {
+  --cde-resposta: #0d9488;
+  --cde-resposta-bg: #f0fdfa;
+  --cde-resposta-soft: #ccfbf1;
+  --cde-exclusao: #475569;
+  --cde-exclusao-bg: #f1f5f9;
+  --cde-exclusao-border: #94a3b8;
+  --cde-novo-bg: #fff5d9;
+  --cde-novo-border: #e6c555;
+  --cde-novo-text: #7a5800;
+}
+
+/* DIREITO DE RESPOSTA */
+.cde-resposta {
+  background: var(--cde-resposta-bg);
+  border-left: 3px solid var(--cde-resposta);
+  padding: 18px 22px 16px;
+  margin: 22px 0;
+  position: relative;
+  font-family: var(--cde-font);
+  border-radius: var(--cde-radius);
+}
+.cde-resposta::before {
+  content: "⚖ Direito de resposta";
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--cde-resposta);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.cde-resposta-meta {
+  font-size: 11.5px;
+  color: var(--cde-muted);
+  margin-bottom: 10px;
+}
+.cde-resposta-meta strong { color: var(--cde-text); }
+.cde-resposta-introducao {
+  font-size: 14px;
+  color: var(--cde-text);
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+.cde-resposta-corpo {
+  font-family: 'Merriweather', serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--cde-text);
+  border-left: 2px solid var(--cde-resposta);
+  padding: 4px 0 4px 14px;
+  margin: 0 0 12px 6px;
+  font-style: italic;
+}
+.cde-resposta-rodape {
+  font-size: 11.5px;
+  color: var(--cde-muted);
+  text-align: right;
+  border-top: 1px solid var(--cde-resposta-soft);
+  padding-top: 8px;
+}
+
+/* TRECHO EXCLUÍDO (some por completo após 24h) */
+.cde-excluido {
+  background: var(--cde-exclusao-bg);
+  border: 1px dashed var(--cde-exclusao-border);
+  border-left: 3px solid var(--cde-exclusao);
+  padding: 16px 20px 14px;
+  margin: 22px 0;
+  position: relative;
+  font-family: var(--cde-font);
+  font-size: 13.5px;
+  color: var(--cde-text);
+  border-radius: var(--cde-radius);
+}
+.cde-excluido-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.cde-excluido-selo {
+  background: var(--cde-exclusao);
+  color: white;
+  padding: 3px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.cde-excluido-meta { font-size: 11.5px; color: var(--cde-muted); }
+.cde-excluido-meta strong { color: var(--cde-text); }
+.cde-excluido-explicacao {
+  margin: 0 0 10px;
+  line-height: 1.6;
+  font-size: 13.5px;
+}
+.cde-excluido-toggle { margin-top: 6px; }
+.cde-excluido-toggle summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 11.5px;
+  color: var(--cde-exclusao);
+  list-style: none;
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  border-radius: 4px;
+  user-select: none;
+}
+.cde-excluido-toggle summary:hover { background: #f8fafc; }
+.cde-excluido-toggle summary::-webkit-details-marker { display: none; }
+.cde-excluido-toggle summary::marker { content: ''; }
+.cde-excluido-toggle[open] summary { background: #e2e8f0; }
+.cde-excluido-original {
+  margin: 12px 0 0;
+  padding: 12px 16px;
+  background: white;
+  border-left: 2px solid #cbd5e1;
+  font-family: 'Merriweather', serif;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--cde-text);
+  font-style: italic;
+  text-decoration: line-through;
+  text-decoration-color: rgba(71, 85, 105, 0.4);
+  border-radius: 4px;
+}
+
+/* CONTEÚDO NOVO (caixa amarela com selo "NOVO · ACRESCENTADO HÁ Xh") */
+.cde-novo {
+  background: var(--cde-novo-bg);
+  border-left: 3px solid var(--cde-novo-border);
+  padding: 18px 22px;
+  margin: 22px 0;
+  position: relative;
+  border-radius: var(--cde-radius);
+}
+.cde-novo::before {
+  content: attr(data-cde-rotulo);
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--cde-novo-border);
+  color: var(--cde-text);
+  font-family: var(--cde-font);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.cde-novo p:last-child { margin-bottom: 0; }
+
+/* ================================================================
+ *  ▲ FIM DO CSS DO PLUGIN ▲
+ * ================================================================ */
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HERO DA DEMO -->
+  <header class="page-hero">
+    <div class="tag">PROTÓTIPO DE PESQUISA · LÍVIA VIEIRA</div>
+    <h1>Plugin de Correção de Erros</h1>
+    <p>Torna as correções jornalísticas mais visíveis e rastreáveis. Funciona em qualquer CMS: basta incluir o CSS e o JS desta página e adicionar atributos <code>data-cde-*</code> no HTML.</p>
+  </header>
+
+  <!-- DEMO: ARTIGO COM CORREÇÕES APLICADAS -->
+  <div class="section-title">Exemplo: artigo com correções</div>
+  <article class="demo">
+
+    <h2 class="demo-headline">Conselho de Segurança da ONU convoca reunião de emergência após escalada no Irã</h2>
+    <p class="demo-byline">Por Ana Martins · 17 de abril de 2026, 09:42</p>
+
+    <!-- BLOCO DE ERRATA (gerado pelo plugin a partir do data-cde-bloco) -->
+    <div
+      data-cde-bloco
+      data-cde-tipo="factual"
+      data-cde-titulo="Número de países que votaram a favor da resolução"
+      data-cde-motivo="A versão publicada inicialmente informava 15 países; o número correto é 14, com uma abstenção."
+      data-cde-antes="Quinze países votaram a favor da resolução."
+      data-cde-depois="Quatorze países votaram a favor da resolução, com uma abstenção."
+      data-cde-data="2026-04-17T14:20:00-03:00">
+    </div>
+
+    <!-- Corpo do artigo com correção inline -->
+    <p>
+      Em sessão extraordinária realizada na manhã desta sexta-feira, o Conselho de Segurança da ONU aprovou uma resolução pedindo moderação a todas as partes envolvidas no conflito.
+      <span data-cde-inline
+            data-cde-antes="Quinze países votaram a favor"
+            data-cde-motivo="Correção: eram 14 votos a favor, não 15.">Quatorze países votaram a favor</span>
+      da resolução, com uma abstenção e nenhum voto contrário.
+    </p>
+
+    <p>O texto da resolução demanda o fim imediato das hostilidades e o retorno das partes à mesa de negociação. Segundo fontes diplomáticas ouvidas pela reportagem, a votação reflete um raro alinhamento entre membros permanentes do Conselho.</p>
+
+    <!-- CONTEÚDO NOVO (caixa amarela; some após 24h, texto fica) -->
+    <div data-cde-novo
+         data-cde-data="2026-04-17T14:20:00-03:00">
+      <p><strong>Atualização (14:20):</strong> o Itamaraty informou, em nota divulgada minutos depois da votação, que o Brasil considera o resultado "uma vitória do multilateralismo" e seguirá apoiando os esforços diplomáticos no Conselho de Segurança.</p>
+    </div>
+
+    <!-- DIREITO DE RESPOSTA (bloco teal, permanente) -->
+    <div data-cde-resposta
+         data-cde-de="Senador Carlos Mendes (PSD-MG)"
+         data-cde-decisao="8ª Vara Cível de Brasília · proc. nº 0042563-17.2026.8.07.0001"
+         data-cde-data="2026-04-17T16:45:00-03:00"
+         data-cde-introducao="A reportagem publica integralmente, abaixo, o texto encaminhado pelo gabinete do parlamentar em exercício do direito de resposta concedido judicialmente. A decisão foi proferida em sede de tutela de urgência."
+         data-cde-texto="Esclareço que minha fala foi extraída de contexto. O que afirmei foi que o Brasil deve adotar postura mais firme nas instâncias multilaterais — não há, em meu posicionamento, qualquer crítica gratuita à diplomacia brasileira."
+         data-cde-rodape="Texto encaminhado pelo gabinete e publicado em sua íntegra, sem edição editorial, conforme determina a decisão judicial.">
+    </div>
+
+    <!-- TRECHO EXCLUÍDO (bloco cinza tracejado; some inteiro após 24h) -->
+    <div data-cde-excluido
+         data-cde-motivo="inverificabilidade"
+         data-cde-marcado-por="Editor de Internacional"
+         data-cde-data="2026-04-17T15:10:00-03:00"
+         data-cde-explicacao="A primeira versão atribuía a 'fontes diplomáticas que pediram anonimato' a informação de que ao menos dois membros permanentes estariam dispostos a vetar a proposta caso ela incluísse observadores neutros. Como a redação não conseguiu confirmar com nenhuma fonte oficial, o trecho foi removido."
+         data-cde-original="Segundo fontes diplomáticas que pediram anonimato, ao menos dois membros permanentes estariam dispostos a vetar a proposta caso ela inclua, em seu texto final, observadores neutros indicados por terceiros.">
+    </div>
+
+    <!-- Botão inline de reportar erro -->
+    <p style="margin-top: 22px; text-align: right;">
+      <button data-cde-abrir-form class="cde-botao-reportar">Comunicar erro nesta matéria</button>
+    </p>
+  </article>
+
+  <!-- DEMO: PADRÕES ALÉM DAS CORREÇÕES DE ERRO -->
+  <div class="section-title">Padrões além das correções de erro</div>
+  <article class="demo">
+    <p style="font-size: 14px; color: #555; margin: 0 0 22px; line-height: 1.6;">
+      O plugin também suporta três padrões que vão além de "corrigir um erro": <strong>conteúdo novo</strong> (acréscimo após a publicação), <strong>direito de resposta</strong> (texto concedido judicialmente) e <strong>trecho excluído</strong> (registro de remoção). Cada um abaixo é uma demonstração isolada, com os atributos visíveis no código-fonte.
+    </p>
+
+    <h3 style="font-size: 15px; margin: 18px 0 10px; color: #333; font-family: 'JetBrains Mono', ui-monospace, monospace;">→ Conteúdo novo · <code style="background: #f1f1ed; padding: 2px 6px; border-radius: 4px; color: #b0347d;">data-cde-novo</code></h3>
+    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Caixa amarela com o selo "NOVO · ACRESCENTADO HÁ Xh". Após 24h, a marcação visual some e o texto permanece como parágrafo normal. Lead-ins em negrito (<code style="background: #f1f1ed; padding: 1px 5px;">&lt;strong&gt;Atualização (HH:MM):&lt;/strong&gt;</code>) também são removidos automaticamente.</p>
+    <div data-cde-novo
+         data-cde-data="2026-04-17T13:50:00-03:00">
+      <p><strong>Atualização (13:50):</strong> agências internacionais confirmaram que o secretário-geral da ONU comparecerá pessoalmente à sessão da próxima semana — informação não disponível na primeira versão da reportagem, divulgada apenas com o nome do representante permanente.</p>
+    </div>
+
+    <h3 style="font-size: 15px; margin: 28px 0 10px; color: #333; font-family: 'JetBrains Mono', ui-monospace, monospace;">→ Trecho excluído · <code style="background: #f1f1ed; padding: 2px 6px; border-radius: 4px; color: #b0347d;">data-cde-excluido</code></h3>
+    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Bloco cinza tracejado: registra a remoção com motivo + texto original colapsável. Após 24h, todo o bloco (incluindo o texto original) some da página, deixando a versão definitiva no arquivo público.</p>
+    <div data-cde-excluido
+         data-cde-motivo="proteção de fonte"
+         data-cde-marcado-por="Editor-chefe"
+         data-cde-data="2026-04-17T16:00:00-03:00"
+         data-cde-explicacao="A primeira versão citava o nome de um servidor da Casa Civil que apurou informações sobre a posição do Itamaraty. A pedido da própria fonte, que alegou risco profissional, o nome foi removido. A informação substantiva permanece no texto."
+         data-cde-original="Segundo João Pereira, assessor da Casa Civil ouvido pela reportagem, a posição do Itamaraty foi articulada com a Presidência ao longo da quinta-feira.">
+    </div>
+
+    <h3 style="font-size: 15px; margin: 28px 0 10px; color: #333; font-family: 'JetBrains Mono', ui-monospace, monospace;">→ Direito de resposta · <code style="background: #f1f1ed; padding: 2px 6px; border-radius: 4px; color: #b0347d;">data-cde-resposta</code></h3>
+    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Bloco teal permanente. Publica integralmente o texto da resposta concedida judicialmente, com referência à decisão e crédito da fonte solicitante. Não some — é parte do registro público.</p>
+    <div data-cde-resposta
+         data-cde-de="Deputada Ana Paula Souza (Federal · DEM-RS)"
+         data-cde-decisao="2ª Vara Cível de Porto Alegre · proc. nº 5012345-67.2026.8.21.0001"
+         data-cde-data="2026-04-17T18:00:00-03:00"
+         data-cde-introducao="Em cumprimento à decisão judicial, esta reportagem publica abaixo, na íntegra, a resposta encaminhada pelo gabinete da deputada Ana Paula Souza."
+         data-cde-texto="A reportagem deu a entender que minha posição contraria a tradição diplomática brasileira. Esclareço, para registro: defendo aprofundamento do multilateralismo, não recuo. Ofereci colaboração à comissão externa de Relações Exteriores e mantenho o canal aberto com o Itamaraty para sugestões técnicas."
+         data-cde-rodape="Texto encaminhado pelo gabinete e publicado sem edição editorial, conforme determina a decisão.">
+    </div>
+  </article>
+
+  <!-- DEMO: ARQUIVO DE CORREÇÕES -->
+  <div class="section-title">Arquivo de correções</div>
+  <article class="demo">
+    <!-- Container onde o plugin renderiza todas as correções registradas -->
+    <div data-cde-lista
+         data-cde-titulo="Correções desta cobertura"
+         data-cde-subtitulo="Lista cronológica e auditável de todas as correções aplicadas.">
+    </div>
+  </article>
+
+  <!-- DOCUMENTAÇÃO -->
+  <div class="section-title">Como instalar em qualquer CMS</div>
+
+  <div class="docs">
+    <h3>1. Copie o CSS e o JS</h3>
+    <p>Abra este arquivo em um editor e copie tudo que está entre as marcas <code>▼ INÍCIO DO PLUGIN ▼</code> e <code>▲ FIM DO PLUGIN ▲</code> — há dois blocos (CSS dentro do <code>&lt;style&gt;</code> e JS dentro do <code>&lt;script&gt;</code>). Cole nos templates do seu CMS (WordPress, Ghost, Drupal, Sanity, etc.) ou hospede como dois arquivos estáticos (<code>cde.css</code>, <code>cde.js</code>).</p>
+
+    <h3>2. Marque correções inline no texto</h3>
+    <p>Sempre que uma palavra ou trecho for corrigido dentro do corpo da matéria, envolva o texto novo em um <code>&lt;span&gt;</code> com os atributos abaixo. O plugin adiciona destaque visual e tooltip com o texto original.</p>
+    <pre><code>&lt;span data-cde-inline
+      data-cde-antes="Quinze países votaram a favor"
+      data-cde-motivo="Correção: eram 14 votos, não 15."&gt;
+  Quatorze países votaram a favor
+&lt;/span&gt;</code></pre>
+
+    <h3>3. Insira um bloco de errata</h3>
+    <p>No topo ou rodapé da matéria, adicione um <code>&lt;div&gt;</code> com os dados da correção. O plugin gera um cartão com badge de tipo, data, motivo e diff antes/depois.</p>
+    <pre><code>&lt;div data-cde-bloco
+     data-cde-tipo="factual"
+     data-cde-titulo="Número correto de votos"
+     data-cde-motivo="A versão inicial informava 15 países; o correto é 14."
+     data-cde-antes="Quinze países votaram a favor."
+     data-cde-depois="Quatorze países votaram a favor."
+     data-cde-data="2026-04-17T14:20:00-03:00"&gt;
+&lt;/div&gt;</code></pre>
+    <p>Valores possíveis para <code>data-cde-tipo</code>: <code>factual</code>, <code>grafia</code>, <code>imprecisao</code>, <code>declaracao</code>, <code>outro</code>. Esta taxonomia está alinhada com a usada na landing page de pesquisa (veja README): <em>factual</em> (vermelho) para erros de fato, <em>grafia</em> (índigo) para erros ortográficos, <em>imprecisao</em> (laranja) para informação vaga ou número impreciso, <em>declaracao</em> (roxo) para erros em citações ou depoimentos, e <em>outro</em> para casos que não se encaixam.</p>
+
+    <h3>4. Mostre o arquivo de correções</h3>
+    <p>Em uma página de arquivo ou no rodapé da matéria, inclua o container. O plugin lista todas as correções da página e adiciona filtros.</p>
+    <pre><code>&lt;div data-cde-lista
+     data-cde-titulo="Correções desta cobertura"
+     data-cde-subtitulo="Lista auditável de todas as correções."&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>5. Botão de comunicar erro</h3>
+    <p>Em qualquer lugar do template, adicione um <code>&lt;button&gt;</code> com o atributo <code>data-cde-abrir-form</code>. O plugin associa o clique à abertura do modal.</p>
+    <pre><code>&lt;button data-cde-abrir-form class="cde-botao-reportar"&gt;
+  Comunicar erro
+&lt;/button&gt;</code></pre>
+    <p>Para um botão flutuante fixo, habilite via configuração JS (ver passo 9).</p>
+
+    <h3>6. Direito de resposta</h3>
+    <p>Quando uma fonte conquistar judicialmente o direito de responder algo dito sobre ela, use <code>data-cde-resposta</code>. O plugin renderiza um bloco teal permanente com o texto integral, a decisão judicial e o crédito.</p>
+    <pre><code>&lt;div data-cde-resposta
+     data-cde-de="Senador X"
+     data-cde-decisao="8ª Vara Cível · proc. nº ..."
+     data-cde-data="2026-04-17T16:45:00-03:00"
+     data-cde-introducao="Em cumprimento à decisão..."
+     data-cde-texto="Esclareço que minha fala foi extraída de contexto..."
+     data-cde-rodape="Texto publicado em sua íntegra, sem edição editorial."&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>7. Trecho excluído (some após 24h)</h3>
+    <p>Quando um trecho da reportagem é removido após a publicação, use <code>data-cde-excluido</code>. O plugin mostra um bloco cinza tracejado com o motivo + opção de expandir o texto original. <strong>Importante:</strong> o bloco inteiro (incluindo o texto original) some automaticamente da página depois de 24 horas, deixando apenas a versão definitiva no arquivo público.</p>
+    <pre><code>&lt;div data-cde-excluido
+     data-cde-motivo="inverificabilidade"
+     data-cde-marcado-por="Editor de Internacional"
+     data-cde-data="2026-04-17T15:10:00-03:00"
+     data-cde-explicacao="A primeira versão atribuía a fontes anônimas..."
+     data-cde-original="O texto entre aspas que estava ali."&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>8. Conteúdo novo / atualização (marcação some após 24h)</h3>
+    <p>Para destacar um trecho que foi acrescentado após a publicação inicial — uma atualização de contexto, um acréscimo de fala, uma nova reação — use <code>data-cde-novo</code>. O plugin envolve o conteúdo numa caixa amarela com selo "Novo · acrescentado há Xh". Depois de 24 horas, a caixa amarela e o selo somem; o <strong>texto permanece</strong> no fluxo do artigo (e qualquer lead-in em negrito como "Atualização (HH:MM):" também é removido para o texto ler como matéria normal).</p>
+    <pre><code>&lt;div data-cde-novo data-cde-data="2026-04-17T14:20:00-03:00"&gt;
+  &lt;p&gt;&lt;strong&gt;Atualização (14:20):&lt;/strong&gt; conteúdo novo aqui...&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>9. Indicador de "publicação recente" (últimas 24h)</h3>
+    <p>O plugin aplica automaticamente a classe <code>.cde-recente</code> e um badge em correções cuja <code>data-cde-data</code> estiver dentro das últimas 24 horas. A mesma janela rege a expiração dos blocos <code>data-cde-excluido</code> e <code>data-cde-novo</code>. A janela pode ser ajustada na configuração.</p>
+
+    <h3>10. Configuração avançada (opcional)</h3>
+    <p>Se quiser customizar comportamento, chame <code>CorrecaoDeErros.init()</code> <em>antes</em> do fim do <code>&lt;body&gt;</code>. Todas as opções são opcionais.</p>
+    <pre><code>&lt;script&gt;
+  CorrecaoDeErros.init({
+    // URL para onde enviar reports de erro (POST JSON)
+    endpoint: "/api/reportar-erro",
+
+    // Janela de "recente" em horas (padrão: 24)
+    janelaRecenteHoras: 24,
+
+    // Mostra botão flutuante de reportar erro
+    botaoFlutuante: true,
+    posicaoBotao: "bottom-right", // ou bottom-left, top-right, top-left
+
+    // Callback em vez de (ou além de) endpoint
+    aoReportar: function(dados) {
+      console.log("Erro reportado:", dados);
+      // dados: { tipo, descricao, email, url, dataEnvio }
+    },
+
+    // Substitui o texto da interface (i18n / tom editorial)
+    rotulos: {
+      botaoReportar: "Comunicar erro",
+      modalTitulo: "Comunique um erro",
+      modalSubtitulo: "Toda correção é revisada pela editoria antes de publicação.",
+      // ...demais rótulos em CorrecaoDeErros.rotulosPadrao
+    }
+  });
+&lt;/script&gt;</code></pre>
+
+    <h3>11. API programática</h3>
+    <p>Se o CMS já tiver as correções em um banco, renderize-as via JS em vez de usar <code>data-cde-bloco</code>:</p>
+    <pre><code>CorrecaoDeErros.registrar([
+  {
+    tipo: "factual",
+    titulo: "Nome correto do porta-voz",
+    motivo: "O texto inicial trazia 'João Silva' — o nome correto é 'Jorge Silva'.",
+    antes: "João Silva",
+    depois: "Jorge Silva",
+    data: "2026-04-17T10:12:00-03:00"
+  }
+]);
+CorrecaoDeErros.renderLista(document.querySelector("#arquivo-correcoes"));</code></pre>
+  </div>
+
+  <div class="section-title">Acessibilidade e compatibilidade</div>
+  <div class="docs">
+    <ul>
+      <li>Navegação por teclado: modal abre com Enter/Espaço, fecha com Esc.</li>
+      <li>Foco gerenciado: ao abrir modal o foco vai para o primeiro campo; ao fechar retorna ao botão.</li>
+      <li>Sem dependências externas (apenas HTML, CSS e JS padrão). Funciona com qualquer CMS.</li>
+      <li>Namespace <code>.cde-*</code> e <code>data-cde-*</code> evitam conflitos com o tema existente.</li>
+      <li>Compatível com navegadores modernos (Chrome, Safari, Firefox, Edge — últimas 2 versões).</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- Botão flutuante (será criado pelo plugin se configurado) -->
+
+<script>
+/* ================================================================
+ *  ▼ INÍCIO DO PLUGIN — COPIE DESTA LINHA ATÉ O FIM DO BLOCO ▼
+ *  Plugin de Correção de Erros (JS)
+ *  API global: window.CorrecaoDeErros
+ * ================================================================ */
+(function(global) {
+  "use strict";
+
+  // ---- Rótulos padrão (pt-BR). Podem ser sobrescritos em init({ rotulos }) ----
+  var rotulosPadrao = {
+    botaoReportar: "Comunicar erro",
+    botaoFlutuante: "Comunicar erro",
+    modalTitulo: "Comunique um erro",
+    modalSubtitulo: "Ajude a melhorar a precisão desta matéria. Sua mensagem será revisada pela editoria.",
+    formTipo: "Tipo do erro",
+    formDescricao: "Descrição",
+    formDescricaoPlaceholder: "Descreva o que está incorreto e, se possível, indique a fonte.",
+    formEmail: "E-mail (opcional)",
+    formEmailPlaceholder: "voce@email.com",
+    formEnviar: "Enviar comunicação",
+    formEnviando: "Enviando...",
+    formFechar: "Fechar",
+    sucessoTitulo: "Recebemos sua comunicação",
+    sucessoTexto: "A editoria vai avaliar e retornar se precisar de mais informações.",
+    tipoFactual: "Erro factual",
+    tipoGrafia: "Erro de grafia",
+    tipoImprecisao: "Imprecisão (número ou informação vaga)",
+    tipoDeclaracao: "Erro em declaração ou citação",
+    tipoOutro: "Outro",
+    listaVazio: "Nenhuma correção registrada nesta matéria.",
+    filtroTodas: "Todas",
+    filtroRecentes: "Recentes (24h)",
+    filtroFactual: "Factual",
+    filtroGrafia: "Grafia",
+    filtroImprecisao: "Imprecisão",
+    filtroDeclaracao: "Declaração",
+    badgeRecente: "Nova"
+  };
+
+  // ---- Configuração global ----
+  var config = {
+    endpoint: null,
+    janelaRecenteHoras: 24,
+    botaoFlutuante: false,
+    posicaoBotao: "bottom-right",
+    aoReportar: null,
+    rotulos: {}
+  };
+
+  // Registro de correções (de data-attributes + adicionadas via API)
+  var registro = [];
+  var elementoFocoAntes = null;
+
+  // ---------- Utilitários ----------
+  function rotulo(chave) {
+    return (config.rotulos && config.rotulos[chave]) || rotulosPadrao[chave] || chave;
+  }
+  function htmlEscape(txt) {
+    if (txt == null) return "";
+    return String(txt)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function formatarData(isoOuString) {
+    if (!isoOuString) return "";
+    var d = new Date(isoOuString);
+    if (isNaN(d.getTime())) return isoOuString;
+    try {
+      return d.toLocaleString("pt-BR", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      });
+    } catch (e) { return d.toISOString(); }
+  }
+  function eRecente(isoOuString) {
+    if (!isoOuString) return false;
+    var d = new Date(isoOuString);
+    if (isNaN(d.getTime())) return false;
+    var agora = Date.now();
+    var limite = config.janelaRecenteHoras * 60 * 60 * 1000;
+    return (agora - d.getTime()) <= limite && (agora - d.getTime()) >= 0;
+  }
+  function criarEl(tag, classes, htmlInterno) {
+    var el = document.createElement(tag);
+    if (classes) el.className = classes;
+    if (htmlInterno != null) el.innerHTML = htmlInterno;
+    return el;
+  }
+
+  // ---------- Transformação de correções inline ----------
+  function transformarInline() {
+    var spans = document.querySelectorAll("[data-cde-inline]:not([data-cde-pronto])");
+    spans.forEach(function(span) {
+      span.classList.add("cde-inline");
+      span.setAttribute("data-cde-pronto", "true");
+      span.setAttribute("tabindex", "0");
+      var antes = span.getAttribute("data-cde-antes") || "";
+      var motivo = span.getAttribute("data-cde-motivo") || "";
+      var tooltipHTML = "";
+      if (motivo) tooltipHTML += "<strong>Correção.</strong> " + htmlEscape(motivo);
+      if (antes) tooltipHTML += "<span class=\"cde-tooltip-antes\">Antes: " + htmlEscape(antes) + "</span>";
+      if (tooltipHTML) {
+        span.setAttribute("aria-label", "Correção. Antes: " + antes + (motivo ? ". Motivo: " + motivo : ""));
+        var mostrarTooltip = function() {
+          esconderTodosTooltips();
+          var tip = criarEl("span", "cde-inline-tooltip", tooltipHTML);
+          span.appendChild(tip);
+        };
+        span.addEventListener("mouseenter", mostrarTooltip);
+        span.addEventListener("focus", mostrarTooltip);
+        span.addEventListener("mouseleave", esconderTodosTooltips);
+        span.addEventListener("blur", esconderTodosTooltips);
+      }
+    });
+  }
+  function esconderTodosTooltips() {
+    document.querySelectorAll(".cde-inline-tooltip").forEach(function(t) { t.remove(); });
+  }
+
+  // ---------- Transformação de blocos de errata ----------
+  function transformarBlocos() {
+    var blocos = document.querySelectorAll("[data-cde-bloco]:not([data-cde-pronto])");
+    blocos.forEach(function(bloco) {
+      var dados = lerDadosDoElemento(bloco);
+      bloco.setAttribute("data-cde-pronto", "true");
+      registro.push(dados);
+      renderizarBlocoEm(bloco, dados);
+    });
+  }
+  function lerDadosDoElemento(el) {
+    return {
+      tipo: el.getAttribute("data-cde-tipo") || "outro",
+      titulo: el.getAttribute("data-cde-titulo") || "",
+      motivo: el.getAttribute("data-cde-motivo") || "",
+      antes: el.getAttribute("data-cde-antes") || "",
+      depois: el.getAttribute("data-cde-depois") || "",
+      data: el.getAttribute("data-cde-data") || ""
+    };
+  }
+  function rotuloTipo(tipo) {
+    var mapa = {
+      factual: "tipoFactual",
+      grafia: "tipoGrafia",
+      imprecisao: "tipoImprecisao",
+      declaracao: "tipoDeclaracao",
+      outro: "tipoOutro"
+    };
+    return rotulo(mapa[tipo] || "tipoOutro");
+  }
+  function renderizarBlocoEm(elemento, dados) {
+    var recente = eRecente(dados.data);
+    elemento.className = "cde-bloco" + (recente ? " cde-recente" : "");
+    elemento.innerHTML = [
+      '<div class="cde-bloco-header">',
+        '<span class="cde-badge cde-tipo-' + htmlEscape(dados.tipo) + '">' + htmlEscape(rotuloTipo(dados.tipo)) + '</span>',
+        recente ? '<span class="cde-badge cde-badge-recente">' + htmlEscape(rotulo("badgeRecente")) + '</span>' : '',
+        dados.data ? '<span class="cde-bloco-data">' + htmlEscape(formatarData(dados.data)) + '</span>' : '',
+      '</div>',
+      dados.titulo ? '<div class="cde-bloco-titulo">' + htmlEscape(dados.titulo) + '</div>' : '',
+      dados.motivo ? '<p class="cde-bloco-motivo">' + htmlEscape(dados.motivo) + '</p>' : '',
+      (dados.antes || dados.depois) ? (
+        '<div class="cde-diff">' +
+          (dados.antes ? '<div class="cde-diff-antes">' + htmlEscape(dados.antes) + '</div>' : '') +
+          (dados.depois ? '<div class="cde-diff-depois">' + htmlEscape(dados.depois) + '</div>' : '') +
+        '</div>'
+      ) : ''
+    ].join("");
+  }
+
+  // ---------- Renderização de lista/arquivo ----------
+  var filtroAtual = "todas";
+  function transformarListas() {
+    var listas = document.querySelectorAll("[data-cde-lista]:not([data-cde-pronto])");
+    listas.forEach(function(container) {
+      container.setAttribute("data-cde-pronto", "true");
+      renderLista(container);
+    });
+  }
+  function renderLista(container) {
+    var titulo = container.getAttribute("data-cde-titulo") || "Correções";
+    var subtitulo = container.getAttribute("data-cde-subtitulo") || "";
+    container.classList.add("cde-lista");
+    container.innerHTML = [
+      '<div class="cde-lista-header">',
+        '<div>',
+          '<h3 class="cde-lista-titulo">' + htmlEscape(titulo) + '</h3>',
+          subtitulo ? '<p class="cde-lista-subtitulo">' + htmlEscape(subtitulo) + '</p>' : '',
+        '</div>',
+        '<span class="cde-lista-subtitulo">' + registro.length + ' registrada(s)</span>',
+      '</div>',
+      '<div class="cde-lista-filtros" role="tablist">',
+        botaoFiltro("todas", rotulo("filtroTodas")),
+        botaoFiltro("recentes", rotulo("filtroRecentes")),
+        botaoFiltro("factual", rotulo("filtroFactual")),
+        botaoFiltro("grafia", rotulo("filtroGrafia")),
+        botaoFiltro("imprecisao", rotulo("filtroImprecisao")),
+        botaoFiltro("declaracao", rotulo("filtroDeclaracao")),
+      '</div>',
+      '<div class="cde-lista-itens"></div>'
+    ].join("");
+
+    // Ligar filtros
+    container.querySelectorAll(".cde-filtro").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        filtroAtual = btn.getAttribute("data-cde-filtro-valor");
+        container.querySelectorAll(".cde-filtro").forEach(function(b) {
+          b.classList.toggle("cde-filtro-ativo", b === btn);
+        });
+        renderItens(container);
+      });
+    });
+    renderItens(container);
+  }
+  function botaoFiltro(valor, texto) {
+    var ativo = filtroAtual === valor ? " cde-filtro-ativo" : "";
+    return '<button type="button" class="cde-filtro' + ativo + '" data-cde-filtro-valor="' + valor + '">' + htmlEscape(texto) + '</button>';
+  }
+  function renderItens(container) {
+    var itensWrap = container.querySelector(".cde-lista-itens");
+    if (!itensWrap) return;
+    var filtrados = registro.filter(function(c) {
+      if (filtroAtual === "todas") return true;
+      if (filtroAtual === "recentes") return eRecente(c.data);
+      return c.tipo === filtroAtual;
+    });
+    if (filtrados.length === 0) {
+      itensWrap.innerHTML = '<div class="cde-lista-vazio">' + htmlEscape(rotulo("listaVazio")) + '</div>';
+      return;
+    }
+    // Ordenar mais recentes primeiro
+    filtrados.sort(function(a, b) {
+      return new Date(b.data || 0) - new Date(a.data || 0);
+    });
+    itensWrap.innerHTML = "";
+    filtrados.forEach(function(dados) {
+      var item = criarEl("div", "cde-lista-item");
+      renderizarBlocoEm(item, dados);
+      itensWrap.appendChild(item);
+    });
+  }
+
+  // ---------- Modal de reportar erro ----------
+  var overlay = null;
+
+  function construirModal() {
+    if (overlay) return overlay;
+    overlay = criarEl("div", "cde-modal-overlay");
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.innerHTML = [
+      '<div class="cde-modal">',
+        '<div class="cde-modal-header">',
+          '<div>',
+            '<h3 class="cde-modal-titulo">' + htmlEscape(rotulo("modalTitulo")) + '</h3>',
+            '<p class="cde-modal-subtitulo">' + htmlEscape(rotulo("modalSubtitulo")) + '</p>',
+          '</div>',
+          '<button type="button" class="cde-modal-fechar" aria-label="' + htmlEscape(rotulo("formFechar")) + '">×</button>',
+        '</div>',
+        '<form class="cde-form" novalidate>',
+          '<div class="cde-form-grupo">',
+            '<label class="cde-form-label">' + htmlEscape(rotulo("formTipo")) + '</label>',
+            '<div class="cde-form-radio-grupo">',
+              radio("tipo", "factual", rotulo("tipoFactual"), true),
+              radio("tipo", "grafia", rotulo("tipoGrafia")),
+              radio("tipo", "imprecisao", rotulo("tipoImprecisao")),
+              radio("tipo", "declaracao", rotulo("tipoDeclaracao")),
+              radio("tipo", "outro", rotulo("tipoOutro")),
+            '</div>',
+          '</div>',
+          '<div class="cde-form-grupo">',
+            '<label class="cde-form-label" for="cde-descricao">' + htmlEscape(rotulo("formDescricao")) + '</label>',
+            '<textarea id="cde-descricao" name="descricao" class="cde-form-textarea" required placeholder="' + htmlEscape(rotulo("formDescricaoPlaceholder")) + '"></textarea>',
+          '</div>',
+          '<div class="cde-form-grupo">',
+            '<label class="cde-form-label" for="cde-email">' + htmlEscape(rotulo("formEmail")) + '</label>',
+            '<input id="cde-email" name="email" type="email" class="cde-form-input" placeholder="' + htmlEscape(rotulo("formEmailPlaceholder")) + '">',
+          '</div>',
+          '<button type="submit" class="cde-form-submit">' + htmlEscape(rotulo("formEnviar")) + '</button>',
+        '</form>',
+      '</div>'
+    ].join("");
+    document.body.appendChild(overlay);
+
+    // Eventos
+    overlay.addEventListener("click", function(e) {
+      if (e.target === overlay) fecharModal();
+    });
+    overlay.querySelector(".cde-modal-fechar").addEventListener("click", fecharModal);
+    overlay.querySelectorAll(".cde-form-radio input").forEach(function(inp) {
+      inp.addEventListener("change", atualizarEstiloRadio);
+    });
+    atualizarEstiloRadio();
+    overlay.querySelector(".cde-form").addEventListener("submit", tratarEnvio);
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && overlay.classList.contains("cde-aberto")) fecharModal();
+    });
+    return overlay;
+  }
+  function radio(nome, valor, rotuloTexto, checked) {
+    return (
+      '<label class="cde-form-radio">' +
+        '<input type="radio" name="' + nome + '" value="' + valor + '"' + (checked ? ' checked' : '') + '>' +
+        '<span>' + htmlEscape(rotuloTexto) + '</span>' +
+      '</label>'
+    );
+  }
+  function atualizarEstiloRadio() {
+    overlay.querySelectorAll(".cde-form-radio").forEach(function(lbl) {
+      var inp = lbl.querySelector("input");
+      lbl.classList.toggle("cde-selecionado", inp && inp.checked);
+    });
+  }
+  function abrirModal() {
+    construirModal();
+    elementoFocoAntes = document.activeElement;
+    overlay.classList.add("cde-aberto");
+    var primeiro = overlay.querySelector(".cde-form-textarea");
+    if (primeiro) setTimeout(function() { primeiro.focus(); }, 50);
+  }
+  function fecharModal() {
+    if (!overlay) return;
+    overlay.classList.remove("cde-aberto");
+    // Limpar estado de sucesso para próxima abertura
+    setTimeout(function() {
+      var form = overlay.querySelector(".cde-form");
+      var sucesso = overlay.querySelector(".cde-form-sucesso");
+      if (sucesso) {
+        sucesso.remove();
+        form.style.display = "";
+        form.reset();
+        atualizarEstiloRadio();
+      }
+    }, 300);
+    if (elementoFocoAntes && elementoFocoAntes.focus) elementoFocoAntes.focus();
+  }
+  function tratarEnvio(e) {
+    e.preventDefault();
+    var form = e.target;
+    var submit = form.querySelector(".cde-form-submit");
+    var dados = {
+      tipo: (form.querySelector("input[name=tipo]:checked") || {}).value || "outro",
+      descricao: form.querySelector("[name=descricao]").value.trim(),
+      email: form.querySelector("[name=email]").value.trim(),
+      url: location.href,
+      dataEnvio: new Date().toISOString()
+    };
+    if (!dados.descricao) {
+      form.querySelector("[name=descricao]").focus();
+      return;
+    }
+    submit.disabled = true;
+    submit.textContent = rotulo("formEnviando");
+
+    var promessa;
+    if (typeof config.aoReportar === "function") {
+      try {
+        var r = config.aoReportar(dados);
+        promessa = (r && typeof r.then === "function") ? r : Promise.resolve(r);
+      } catch (err) { promessa = Promise.reject(err); }
+    } else if (config.endpoint) {
+      promessa = fetch(config.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      });
+    } else {
+      // Sem endpoint nem callback: apenas simula sucesso (modo demo).
+      promessa = Promise.resolve();
+    }
+
+    Promise.resolve(promessa).then(function() {
+      mostrarSucesso(form);
+    }).catch(function() {
+      submit.disabled = false;
+      submit.textContent = rotulo("formEnviar");
+      alert("Não foi possível enviar agora. Tente novamente em instantes.");
+    });
+  }
+  function mostrarSucesso(form) {
+    form.style.display = "none";
+    var sucesso = criarEl("div", "cde-form-sucesso",
+      '<div class="cde-form-sucesso-icone">✓</div>' +
+      '<p class="cde-form-sucesso-titulo">' + htmlEscape(rotulo("sucessoTitulo")) + '</p>' +
+      '<p class="cde-form-sucesso-texto">' + htmlEscape(rotulo("sucessoTexto")) + '</p>'
+    );
+    form.parentNode.appendChild(sucesso);
+    setTimeout(fecharModal, 2600);
+  }
+
+  // ---------- Botão flutuante ----------
+  function montarBotaoFlutuante() {
+    if (!config.botaoFlutuante) return;
+    if (document.querySelector(".cde-botao-flutuante")) return;
+    var btn = criarEl("button", "cde-botao-reportar cde-botao-flutuante cde-pos-" + config.posicaoBotao,
+      htmlEscape(rotulo("botaoFlutuante")));
+    btn.type = "button";
+    btn.addEventListener("click", abrirModal);
+    document.body.appendChild(btn);
+  }
+
+  // ---------- Ligar botões data-cde-abrir-form ----------
+  function ligarBotoes() {
+    document.querySelectorAll("[data-cde-abrir-form]:not([data-cde-pronto])").forEach(function(btn) {
+      btn.setAttribute("data-cde-pronto", "true");
+      if (!btn.textContent.trim()) btn.textContent = rotulo("botaoReportar");
+      if (!btn.classList.contains("cde-botao-reportar")) btn.classList.add("cde-botao-reportar");
+      btn.addEventListener("click", function(e) {
+        e.preventDefault();
+        abrirModal();
+      });
+    });
+  }
+
+  // ---------- Direito de resposta ----------
+  function transformarRespostas() {
+    document.querySelectorAll("[data-cde-resposta]:not([data-cde-pronto])").forEach(function(el) {
+      el.setAttribute("data-cde-pronto", "true");
+      el.classList.add("cde-resposta");
+      var de = el.getAttribute("data-cde-de") || "";
+      var decisao = el.getAttribute("data-cde-decisao") || "";
+      var dataAttr = el.getAttribute("data-cde-data") || "";
+      var introducao = el.getAttribute("data-cde-introducao") || "";
+      var texto = el.getAttribute("data-cde-texto") || "";
+      var rodape = el.getAttribute("data-cde-rodape") || "";
+      var partesMeta = [];
+      if (de) partesMeta.push("<strong>" + htmlEscape(de) + "</strong>");
+      if (dataAttr) partesMeta.push("publicado em <strong>" + htmlEscape(formatarData(dataAttr)) + "</strong>");
+      if (decisao) partesMeta.push("em cumprimento à decisão: <strong>" + htmlEscape(decisao) + "</strong>");
+      el.innerHTML = [
+        partesMeta.length ? '<div class="cde-resposta-meta">' + partesMeta.join(" · ") + '</div>' : '',
+        introducao ? '<p class="cde-resposta-introducao">' + htmlEscape(introducao) + '</p>' : '',
+        texto ? '<blockquote class="cde-resposta-corpo">' + htmlEscape(texto) + '</blockquote>' : '',
+        rodape ? '<div class="cde-resposta-rodape">' + htmlEscape(rodape) + '</div>' : ''
+      ].join("");
+    });
+  }
+
+  // ---------- Trecho excluído (some por completo após 24h) ----------
+  function transformarExcluidos() {
+    document.querySelectorAll("[data-cde-excluido]:not([data-cde-pronto])").forEach(function(el) {
+      el.setAttribute("data-cde-pronto", "true");
+      el.classList.add("cde-excluido");
+      var motivo = el.getAttribute("data-cde-motivo") || "não informado";
+      var marcadoPor = el.getAttribute("data-cde-marcado-por") || "";
+      var dataAttr = el.getAttribute("data-cde-data") || "";
+      var explicacao = el.getAttribute("data-cde-explicacao") || "";
+      var original = el.getAttribute("data-cde-original") || "";
+      var partesMeta = [];
+      if (dataAttr) partesMeta.push("<strong>" + htmlEscape(formatarData(dataAttr)) + "</strong>");
+      partesMeta.push("motivo: <strong>" + htmlEscape(motivo) + "</strong>");
+      if (marcadoPor) partesMeta.push("marcado por <strong>" + htmlEscape(marcadoPor) + "</strong>");
+      el.innerHTML = [
+        '<div class="cde-excluido-cabecalho">',
+          '<span class="cde-excluido-selo">⊘ Trecho excluído</span>',
+          '<span class="cde-excluido-meta">' + partesMeta.join(" · ") + '</span>',
+        '</div>',
+        explicacao ? '<p class="cde-excluido-explicacao">' + htmlEscape(explicacao) + '</p>' : '',
+        original ? (
+          '<details class="cde-excluido-toggle">' +
+            '<summary>Ver trecho excluído (texto original)</summary>' +
+            '<blockquote class="cde-excluido-original">' + htmlEscape(original) + '</blockquote>' +
+          '</details>'
+        ) : ''
+      ].join("");
+    });
+  }
+
+  // ---------- Conteúdo novo (caixa amarela; marcação some 24h, texto fica) ----------
+  function transformarNovos() {
+    document.querySelectorAll("[data-cde-novo]:not([data-cde-pronto])").forEach(function(el) {
+      el.setAttribute("data-cde-pronto", "true");
+      el.classList.add("cde-novo");
+      var dataAttr = el.getAttribute("data-cde-data") || "";
+      var horas = horasDesde(dataAttr);
+      var rotuloTopo;
+      if (horas == null) {
+        rotuloTopo = "Novo";
+      } else if (horas < 1) {
+        rotuloTopo = "Novo · acrescentado há " + Math.max(1, Math.round(horas * 60)) + "min";
+      } else if (horas < 2) {
+        rotuloTopo = "Novo · acrescentado há 1h";
+      } else {
+        rotuloTopo = "Novo · acrescentado há " + Math.round(horas) + "h";
+      }
+      el.setAttribute("data-cde-rotulo", rotuloTopo);
+    });
+  }
+
+  // ---------- Lógica de 24h embutida ----------
+  function horasDesde(isoOuString) {
+    if (!isoOuString) return null;
+    var d = new Date(isoOuString);
+    if (isNaN(d.getTime())) return null;
+    return (Date.now() - d.getTime()) / 3600000;
+  }
+
+  function aplicarRegrasDe24h() {
+    var janela = config.janelaRecenteHoras;
+
+    // Trecho excluído: bloco inteiro some
+    document.querySelectorAll(".cde-excluido[data-cde-data]").forEach(function(el) {
+      var h = horasDesde(el.getAttribute("data-cde-data"));
+      if (h != null && h > janela) el.style.display = "none";
+    });
+
+    // Conteúdo novo: marcação some, texto e <strong>...:</strong> são removidos
+    document.querySelectorAll(".cde-novo[data-cde-data]").forEach(function(el) {
+      var h = horasDesde(el.getAttribute("data-cde-data"));
+      if (h != null && h > janela) {
+        el.classList.remove("cde-novo");
+        el.removeAttribute("data-cde-rotulo");
+        el.querySelectorAll("p").forEach(function(p) {
+          var limpo = p.innerHTML.replace(/^\s*<strong>[^<]*:\s*<\/strong>\s*/i, '');
+          if (limpo !== p.innerHTML) {
+            p.innerHTML = limpo.charAt(0).toUpperCase() + limpo.slice(1);
+          }
+        });
+      }
+    });
+  }
+
+  // ---------- Boot ----------
+  function processarPagina() {
+    transformarInline();
+    transformarBlocos();
+    transformarRespostas();
+    transformarExcluidos();
+    transformarNovos();
+    transformarListas();
+    aplicarRegrasDe24h();
+    ligarBotoes();
+  }
+
+  function init(opcoes) {
+    opcoes = opcoes || {};
+    Object.keys(opcoes).forEach(function(k) {
+      if (k === "rotulos" && opcoes.rotulos) {
+        config.rotulos = Object.assign({}, config.rotulos, opcoes.rotulos);
+      } else {
+        config[k] = opcoes[k];
+      }
+    });
+    montarBotaoFlutuante();
+    processarPagina();
+  }
+
+  // API pública
+  var API = {
+    init: init,
+    config: config,
+    rotulosPadrao: rotulosPadrao,
+    registrar: function(correcoes) {
+      if (!Array.isArray(correcoes)) correcoes = [correcoes];
+      correcoes.forEach(function(c) { registro.push(c); });
+      // Atualiza listas já renderizadas
+      document.querySelectorAll("[data-cde-lista][data-cde-pronto]").forEach(function(c) {
+        renderLista(c);
+      });
+    },
+    renderLista: function(container) { renderLista(container); },
+    abrirFormulario: abrirModal,
+    fecharFormulario: fecharModal,
+    reprocessar: processarPagina,
+    definirEndpoint: function(url) { config.endpoint = url; },
+    aoReportar: function(cb) { config.aoReportar = cb; }
+  };
+  global.CorrecaoDeErros = API;
+
+  // Auto-init quando o DOM estiver pronto
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", processarPagina);
+  } else {
+    processarPagina();
+  }
+})(window);
+
+/* ================================================================
+ *  ▲ FIM DO JS DO PLUGIN ▲
+ * ================================================================ */
+
+/* ==== Configuração desta página de DEMO (não faz parte do plugin) ==== */
+CorrecaoDeErros.init({
+  botaoFlutuante: true,
+  posicaoBotao: "bottom-right",
+  aoReportar: function(dados) {
+    console.log("[DEMO] Erro reportado:", dados);
+    return Promise.resolve();
+  }
+});
+
+// Registra mais algumas correções de exemplo diretamente via API
+CorrecaoDeErros.registrar([
+  {
+    tipo: "grafia",
+    titulo: "Correção de grafia no terceiro parágrafo",
+    motivo: "O sobrenome do ministro aparecia como 'Viera'; a grafia correta é 'Vieira'.",
+    antes: "Mauro Viera",
+    depois: "Mauro Vieira",
+    data: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString() // 5h atrás
+  },
+  {
+    tipo: "imprecisao",
+    titulo: "Número de deslocados detalhado",
+    motivo: "A versão original informava 'mais de 400 mil' — formulação vaga. A cifra exata, do boletim oficial da ONU, é 420 mil.",
+    antes: "mais de 400 mil deslocados internos",
+    depois: "420 mil deslocados internos",
+    data: "2026-04-16T17:30:00-03:00"
+  },
+  {
+    tipo: "declaracao",
+    titulo: "Citação literal da embaixadora acrescentada",
+    motivo: "A versão original parafraseava a fala da embaixadora. A pedido da assessoria, substituímos pela citação literal.",
+    antes: "A embaixadora reforçou o compromisso com o multilateralismo.",
+    depois: "'A posição do Brasil será firme em defesa do direito internacional humanitário, mas sempre dentro dos limites do diálogo construtivo', disse a embaixadora.",
+    data: "2026-04-15T10:00:00-03:00"
+  }
+]);
+// Força re-render da lista depois de adicionar as correções acima
+document.querySelectorAll("[data-cde-lista]").forEach(function(c) {
+  CorrecaoDeErros.renderLista(c);
+});
+</script>
+</body>
+</html>
