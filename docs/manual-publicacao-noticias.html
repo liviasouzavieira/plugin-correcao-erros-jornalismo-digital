@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de publicação de notícias com correção de erros</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+    background: #f6f6f4;
+    color: #1a1a1a;
+    line-height: 1.65;
+  }
+
+  /* HEADER */
+  header.main {
+    border-bottom: 3px solid #b0347d;
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+  header.main p.tag {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  header.main h1 {
+    font-size: 32px;
+    margin: 0 0 10px 0;
+    color: #111;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+  header.main p.subtitle {
+    font-size: 16px;
+    color: #555;
+    margin: 4px 0;
+  }
+
+  /* SECTION STYLES */
+  section.chapter {
+    background: white;
+    border: 1px solid #e5e5e2;
+    border-radius: 10px;
+    padding: 32px 36px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  section.chapter h2 {
+    font-size: 22px;
+    margin: 0 0 16px 0;
+    color: #111;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f3f3f0;
+  }
+  section.chapter h3 {
+    font-size: 15px;
+    margin: 24px 0 10px 0;
+    color: #333;
+    font-weight: 700;
+  }
+  section.chapter p {
+    font-size: 15px;
+    color: #333;
+    margin: 0 0 12px 0;
+  }
+
+  /* TOC */
+  nav.toc {
+    background: white;
+    border: 1px solid #e5e5e2;
+    border-left: 4px solid #b0347d;
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-bottom: 32px;
+  }
+  nav.toc h2 {
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #888;
+    margin: 0 0 16px 0;
+    font-weight: 700;
+  }
+  nav.toc .toc-section {
+    margin-bottom: 14px;
+  }
+  nav.toc .toc-section strong {
+    display: block;
+    color: #1a1a1a;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  nav.toc .toc-section a {
+    color: #b0347d;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+    margin-right: 14px;
+  }
+  nav.toc .toc-section a:hover { text-decoration: underline; }
+
+  /* STEPS */
+  ol.steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  ol.steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 14px 16px 14px 56px;
+    margin-bottom: 10px;
+    background: #fcfcfb;
+    border-left: 3px solid #b0347d;
+    border-radius: 0 6px 6px 0;
+  }
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: #b0347d;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  ol.steps li strong { color: #111; }
+
+  /* PATTERN CARDS */
+  section.pattern {
+    background: white;
+    border: 1px solid #e5e5e2;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  section.pattern .pattern-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid #f3f3f0;
+  }
+  section.pattern .pattern-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  section.pattern h2 {
+    font-size: 22px;
+    margin: 0;
+    color: #111;
+  }
+  section.pattern p.pattern-color {
+    font-size: 13px;
+    color: #666;
+    margin: 2px 0 0 0;
+  }
+  section.pattern h3 {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #888;
+    margin: 22px 0 10px 0;
+    font-weight: 700;
+  }
+  section.pattern p {
+    font-size: 15px;
+    color: #333;
+    margin: 0 0 10px 0;
+  }
+  section.pattern ul.scenarios {
+    margin: 0 0 8px 0;
+    padding-left: 20px;
+  }
+  section.pattern ul.scenarios li {
+    font-size: 14.5px;
+    color: #333;
+    padding: 3px 0;
+  }
+  section.pattern p.dica {
+    background: #fff8e6;
+    border-left: 3px solid #f0b429;
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 14.5px;
+    color: #4a3800;
+  }
+  section.pattern code {
+    background: #f0eff0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #b0347d;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  section.pattern .live {
+    background: #fcfcfb;
+    border: 1px dashed #d4d4d0;
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin-bottom: 6px;
+  }
+  section.pattern pre {
+    background: #1e1e1e;
+    color: #f3f3f3;
+    border-radius: 6px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    margin: 0;
+  }
+  section.pattern pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    white-space: pre;
+  }
+
+  /* INLINE CODE OUTSIDE PATTERN CARDS */
+  section.chapter code {
+    background: #f0eff0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13.5px;
+    color: #b0347d;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  /* WARNING / NOTE BOXES */
+  .warning {
+    background: #fff3f3;
+    border-left: 3px solid #c0272d;
+    padding: 14px 18px;
+    border-radius: 4px;
+    font-size: 14.5px;
+    color: #4a0e10;
+    margin: 16px 0;
+  }
+  .note {
+    background: #eef7fa;
+    border-left: 3px solid #0d9488;
+    padding: 14px 18px;
+    border-radius: 4px;
+    font-size: 14.5px;
+    color: #053f3a;
+    margin: 16px 0;
+  }
+
+  /* DECISION TREE */
+  .decision {
+    background: #f8f8f6;
+    border: 1px solid #e5e5e2;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 18px 0;
+  }
+  .decision h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #333;
+  }
+  .decision ul {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .decision li {
+    padding: 8px 0;
+    border-bottom: 1px dashed #e5e5e2;
+    font-size: 14.5px;
+  }
+  .decision li:last-child { border-bottom: none; }
+  .decision li strong { color: #b0347d; }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e5e2;
+    color: #777;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  /* ============== PLUGIN CSS INLINE ============== */
+  /*
+ * ================================================================
+ *  Plugin de Correção de Erros — CSS
+ *  Namespace: .cde-*
+ *
+ *  Este arquivo contém somente os estilos do plugin.
+ *  Inclua-o via <link rel="stylesheet" href="cde.css"> no template
+ *  do seu CMS ou concatene com seu próprio bundle de estilos.
+ *
+ *  Versão: 1.0
+ *  Origem: pesquisa "Protocolo de gestão para correção de erros
+ *  no jornalismo digital" (nº PPP0014/2024 — Fapesb/CNPq).
+ * ================================================================
+ */
+
+:root {
+  --cde-font: 'Inter', -apple-system, system-ui, sans-serif;
+  --cde-text: #1a1a1a;
+  --cde-muted: #6b6b6b;
+  --cde-border: #e5e5e2;
+  --cde-bg: #ffffff;
+  --cde-bg-alt: #fafaf8;
+  --cde-accent: #b0347d;            /* cor principal (editável) */
+  --cde-accent-soft: #fbecf4;
+  --cde-recente-bg: #fff5d9;        /* amarelo para <24h */
+  --cde-recente-border: #e6c555;
+  --cde-recente-text: #7a5800;
+  --cde-antes-bg: #fdecec;          /* vermelho suave para "antes" */
+  --cde-antes-text: #8a1f1f;
+  --cde-antes-border: #f2b8b8;
+  --cde-depois-bg: #e8f5ea;         /* verde suave para "depois" */
+  --cde-depois-text: #1e5a2a;
+  --cde-depois-border: #a8d5b0;
+  --cde-radius: 8px;
+  --cde-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* ---------- Correção inline (em meio ao texto do artigo) ---------- */
+.cde-inline {
+  background: var(--cde-recente-bg);
+  border-bottom: 2px solid var(--cde-recente-border);
+  padding: 1px 3px;
+  border-radius: 3px 3px 0 0;
+  cursor: help;
+  font-style: normal;
+  position: relative;
+  transition: background 0.15s;
+}
+.cde-inline:hover { background: #fce9b0; }
+.cde-inline::after {
+  content: "✎";
+  font-size: 0.72em;
+  color: var(--cde-recente-text);
+  margin-left: 3px;
+  font-weight: 700;
+}
+.cde-inline-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  background: #1a1a1a;
+  color: white;
+  font-size: 12.5px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 6px;
+  min-width: 220px;
+  max-width: 320px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  z-index: 50;
+  font-style: normal;
+  font-weight: 400;
+  white-space: normal;
+}
+.cde-inline-tooltip strong { color: var(--cde-recente-border); font-weight: 700; }
+.cde-inline-tooltip .cde-tooltip-antes {
+  display: block;
+  text-decoration: line-through;
+  color: #ff9a9a;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.cde-inline-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 14px;
+  border: 6px solid transparent;
+  border-top-color: #1a1a1a;
+}
+
+/* ---------- Bloco de errata (topo ou rodapé do artigo) ---------- */
+.cde-bloco {
+  background: var(--cde-bg);
+  border: 1px solid var(--cde-border);
+  border-left: 4px solid var(--cde-accent);
+  border-radius: var(--cde-radius);
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-family: var(--cde-font);
+  color: var(--cde-text);
+}
+.cde-bloco.cde-recente {
+  border-left-color: var(--cde-recente-border);
+  background: linear-gradient(to right, var(--cde-recente-bg) 0%, var(--cde-bg) 40%);
+}
+.cde-bloco-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--cde-muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+.cde-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--cde-accent-soft);
+  color: var(--cde-accent);
+}
+/* Paleta alinhada com a landing page (factual/grafia/imprecisão/declaração/outro) */
+.cde-badge.cde-tipo-factual { background: #fef2f2; color: #dc2626; }
+.cde-badge.cde-tipo-grafia { background: #eef2ff; color: #6366f1; }
+.cde-badge.cde-tipo-imprecisao { background: #fff7ed; color: #ea580c; }
+.cde-badge.cde-tipo-declaracao { background: #faf5ff; color: #9333ea; }
+.cde-badge.cde-tipo-outro { background: #eee; color: #444; }
+.cde-badge-recente {
+  background: var(--cde-recente-bg);
+  color: var(--cde-recente-text);
+  border: 1px solid var(--cde-recente-border);
+}
+.cde-bloco-data { font-variant-numeric: tabular-nums; }
+.cde-bloco-titulo {
+  font-size: 15.5px;
+  font-weight: 600;
+  margin: 2px 0 4px;
+  line-height: 1.35;
+}
+.cde-bloco-motivo {
+  font-size: 14px;
+  color: #3a3a3a;
+  margin: 0 0 12px;
+  line-height: 1.55;
+}
+.cde-diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.cde-diff-antes, .cde-diff-depois {
+  font-size: 13.5px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  line-height: 1.5;
+  position: relative;
+  padding-top: 24px;
+}
+.cde-diff-antes {
+  background: var(--cde-antes-bg);
+  color: var(--cde-antes-text);
+  border: 1px solid var(--cde-antes-border);
+  text-decoration: line-through;
+  text-decoration-color: rgba(138,31,31,0.4);
+}
+.cde-diff-depois {
+  background: var(--cde-depois-bg);
+  color: var(--cde-depois-text);
+  border: 1px solid var(--cde-depois-border);
+  font-weight: 500;
+}
+.cde-diff-antes::before, .cde-diff-depois::before {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.cde-diff-antes::before { content: "Antes"; color: var(--cde-antes-text); opacity: 0.7; }
+.cde-diff-depois::before { content: "Depois"; color: var(--cde-depois-text); opacity: 0.7; }
+@media (max-width: 560px) {
+  .cde-diff { grid-template-columns: 1fr; }
+}
+
+/* ---------- Arquivo de correções (lista completa) ---------- */
+.cde-lista {
+  font-family: var(--cde-font);
+  color: var(--cde-text);
+}
+.cde-lista-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.cde-lista-titulo {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+.cde-lista-subtitulo {
+  font-size: 13.5px;
+  color: var(--cde-muted);
+  margin: 2px 0 0;
+}
+.cde-lista-filtros {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px;
+  background: var(--cde-bg-alt);
+  border: 1px solid var(--cde-border);
+  border-radius: var(--cde-radius);
+  margin-bottom: 12px;
+}
+.cde-filtro {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--cde-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.cde-filtro:hover { background: white; color: var(--cde-text); border-color: var(--cde-border); }
+.cde-filtro.cde-filtro-ativo {
+  background: var(--cde-text);
+  color: white;
+  border-color: var(--cde-text);
+}
+.cde-lista-vazia {
+  padding: 24px;
+  text-align: center;
+  color: var(--cde-muted);
+  font-size: 14px;
+  background: var(--cde-bg-alt);
+  border: 1px dashed var(--cde-border);
+  border-radius: var(--cde-radius);
+}
+.cde-lista-item { margin-bottom: 12px; }
+.cde-lista-item:last-child { margin-bottom: 0; }
+
+/* ---------- Botão de reportar erro ---------- */
+.cde-botao-reportar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cde-bg);
+  color: var(--cde-text);
+  border: 1px solid var(--cde-border);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-family: var(--cde-font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--cde-shadow);
+}
+.cde-botao-reportar:hover {
+  background: var(--cde-text);
+  color: white;
+  border-color: var(--cde-text);
+}
+.cde-botao-reportar::before { content: "⚑"; font-size: 14px; }
+
+.cde-botao-flutuante {
+  position: fixed;
+  z-index: 9998;
+  background: var(--cde-text);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+}
+.cde-botao-flutuante:hover { background: var(--cde-accent); color: white; }
+.cde-botao-flutuante.cde-pos-bottom-right { bottom: 20px; right: 20px; }
+.cde-botao-flutuante.cde-pos-bottom-left { bottom: 20px; left: 20px; }
+.cde-botao-flutuante.cde-pos-top-right { top: 20px; right: 20px; }
+.cde-botao-flutuante.cde-pos-top-left { top: 20px; left: 20px; }
+
+/* ---------- Modal de reportar erro ---------- */
+.cde-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20,20,20,0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  overflow-y: auto;
+  font-family: var(--cde-font);
+}
+.cde-modal-overlay.cde-aberto {
+  opacity: 1;
+  pointer-events: auto;
+}
+.cde-modal {
+  background: var(--cde-bg);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+  transform: translateY(-10px);
+  transition: transform 0.2s;
+}
+.cde-modal-overlay.cde-aberto .cde-modal { transform: translateY(0); }
+.cde-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 22px 8px;
+}
+.cde-modal-titulo {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+}
+.cde-modal-subtitulo {
+  font-size: 13.5px;
+  color: var(--cde-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+.cde-modal-fechar {
+  background: transparent;
+  border: none;
+  color: var(--cde-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin: -4px -8px 0 0;
+  border-radius: 4px;
+}
+.cde-modal-fechar:hover { background: var(--cde-bg-alt); color: var(--cde-text); }
+
+.cde-form { padding: 12px 22px 22px; }
+.cde-form-grupo { margin-bottom: 16px; }
+.cde-form-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--cde-muted);
+  margin-bottom: 6px;
+}
+.cde-form-input, .cde-form-textarea, .cde-form-select {
+  width: 100%;
+  border: 1px solid var(--cde-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--cde-text);
+  background: var(--cde-bg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.cde-form-input:focus, .cde-form-textarea:focus, .cde-form-select:focus {
+  outline: none;
+  border-color: var(--cde-accent);
+  box-shadow: 0 0 0 3px var(--cde-accent-soft);
+}
+.cde-form-textarea { resize: vertical; min-height: 90px; }
+
+.cde-form-radio-grupo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cde-form-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--cde-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 13.5px;
+  transition: all 0.15s;
+  background: var(--cde-bg);
+}
+.cde-form-radio:hover { border-color: var(--cde-accent); background: var(--cde-accent-soft); }
+.cde-form-radio input { margin: 0; accent-color: var(--cde-accent); }
+.cde-form-radio.cde-selecionado {
+  border-color: var(--cde-accent);
+  background: var(--cde-accent-soft);
+  color: var(--cde-accent);
+  font-weight: 600;
+}
+@media (max-width: 460px) {
+  .cde-form-radio-grupo { grid-template-columns: 1fr; }
+}
+
+.cde-form-submit {
+  width: 100%;
+  background: var(--cde-text);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.cde-form-submit:hover { background: var(--cde-accent); }
+.cde-form-submit:disabled { background: #bbb; cursor: not-allowed; }
+
+.cde-form-sucesso {
+  padding: 28px 24px;
+  text-align: center;
+  color: var(--cde-depois-text);
+}
+.cde-form-sucesso-icone {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+.cde-form-sucesso-titulo {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--cde-text);
+}
+.cde-form-sucesso-texto {
+  font-size: 14px;
+  color: var(--cde-muted);
+  margin: 0;
+}
+
+/* ================================================================
+ *  PADRÕES ALÉM DAS CORREÇÕES DE ERRO
+ *  - cde-resposta : direito de resposta (teal, permanente)
+ *  - cde-excluido : trecho excluído (cinza tracejado, some 24h)
+ *  - cde-novo     : conteúdo novo / atualização (amarelo, marcação some 24h, texto fica)
+ * ================================================================ */
+:root {
+  --cde-resposta: #0d9488;
+  --cde-resposta-bg: #f0fdfa;
+  --cde-resposta-soft: #ccfbf1;
+  --cde-exclusao: #475569;
+  --cde-exclusao-bg: #f1f5f9;
+  --cde-exclusao-border: #94a3b8;
+  --cde-novo-bg: #fff5d9;
+  --cde-novo-border: #e6c555;
+  --cde-novo-text: #7a5800;
+}
+
+/* DIREITO DE RESPOSTA */
+.cde-resposta {
+  background: var(--cde-resposta-bg);
+  border-left: 3px solid var(--cde-resposta);
+  padding: 18px 22px 16px;
+  margin: 22px 0;
+  position: relative;
+  font-family: var(--cde-font);
+  border-radius: var(--cde-radius);
+}
+.cde-resposta::before {
+  content: "⚖ Direito de resposta";
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--cde-resposta);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.cde-resposta-meta {
+  font-size: 11.5px;
+  color: var(--cde-muted);
+  margin-bottom: 10px;
+}
+.cde-resposta-meta strong { color: var(--cde-text); }
+.cde-resposta-introducao {
+  font-size: 14px;
+  color: var(--cde-text);
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+.cde-resposta-corpo {
+  font-family: 'Merriweather', serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--cde-text);
+  border-left: 2px solid var(--cde-resposta);
+  padding: 4px 0 4px 14px;
+  margin: 0 0 12px 6px;
+  font-style: italic;
+}
+.cde-resposta-rodape {
+  font-size: 11.5px;
+  color: var(--cde-muted);
+  text-align: right;
+  border-top: 1px solid var(--cde-resposta-soft);
+  padding-top: 8px;
+}
+
+/* TRECHO EXCLUÍDO (some por completo após 24h) */
+.cde-excluido {
+  background: var(--cde-exclusao-bg);
+  border: 1px dashed var(--cde-exclusao-border);
+  border-left: 3px solid var(--cde-exclusao);
+  padding: 16px 20px 14px;
+  margin: 22px 0;
+  position: relative;
+  font-family: var(--cde-font);
+  font-size: 13.5px;
+  color: var(--cde-text);
+  border-radius: var(--cde-radius);
+}
+.cde-excluido-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.cde-excluido-selo {
+  background: var(--cde-exclusao);
+  color: white;
+  padding: 3px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.cde-excluido-meta { font-size: 11.5px; color: var(--cde-muted); }
+.cde-excluido-meta strong { color: var(--cde-text); }
+.cde-excluido-explicacao {
+  margin: 0 0 10px;
+  line-height: 1.6;
+  font-size: 13.5px;
+}
+.cde-excluido-toggle { margin-top: 6px; }
+.cde-excluido-toggle summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 11.5px;
+  color: var(--cde-exclusao);
+  list-style: none;
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  border-radius: 4px;
+  user-select: none;
+}
+.cde-excluido-toggle summary:hover { background: #f8fafc; }
+.cde-excluido-toggle summary::-webkit-details-marker { display: none; }
+.cde-excluido-toggle summary::marker { content: ''; }
+.cde-excluido-toggle[open] summary { background: #e2e8f0; }
+.cde-excluido-original {
+  margin: 12px 0 0;
+  padding: 12px 16px;
+  background: white;
+  border-left: 2px solid #cbd5e1;
+  font-family: 'Merriweather', serif;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--cde-text);
+  font-style: italic;
+  text-decoration: line-through;
+  text-decoration-color: rgba(71, 85, 105, 0.4);
+  border-radius: 4px;
+}
+
+/* CONTEÚDO NOVO (caixa amarela com selo "NOVO · ACRESCENTADO HÁ Xh") */
+.cde-novo {
+  background: var(--cde-novo-bg);
+  border-left: 3px solid var(--cde-novo-border);
+  padding: 18px 22px;
+  margin: 22px 0;
+  position: relative;
+  border-radius: var(--cde-radius);
+}
+.cde-novo::before {
+  content: attr(data-cde-rotulo);
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--cde-novo-border);
+  color: var(--cde-text);
+  font-family: var(--cde-font);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.cde-novo p:last-child { margin-bottom: 0; }
+
+</style>
+</head>
+<body>
+
+<header class="main">
+  <p class="tag">Manual · Portal de notícias universitário</p>
+  <h1>Como publicar uma notícia com correção transparente</h1>
+  <p class="subtitle">Guia prático para estudantes de jornalismo da universidade — passo a passo da publicação no WordPress e uso do plugin de correção de erros.</p>
+  <p class="subtitle" style="font-size: 14px; margin-top: 16px; color: #777;">Material pedagógico da pesquisa <em>Protocolo de gestão para correção de erros no jornalismo digital</em> (Fapesb/CNPq, nº PPP0014/2024).</p>
+</header>
+
+<nav class="toc">
+  <h2>Índice</h2>
+  <div class="toc-section">
+    <strong>Parte I — O essencial antes de começar</strong>
+    <a href="#intro">O que é este manual</a>
+    <a href="#plugin">O plugin de correção</a>
+    <a href="#editor">Qual editor você usa</a>
+  </div>
+  <div class="toc-section">
+    <strong>Parte II — Publicando uma notícia</strong>
+    <a href="#publicar-basico">Passo a passo da publicação</a>
+    <a href="#inserir-correcao">Como inserir uma correção</a>
+  </div>
+  <div class="toc-section">
+    <strong>Parte III — Qual padrão usar</strong>
+    <a href="#qual-padrao">Árvore de decisão</a>
+  </div>
+  <div class="toc-section">
+    <strong>Parte IV — Os 11 padrões em detalhe</strong>
+    <a href="#factual">1. Erro factual</a>
+    <a href="#grafia">2. Erro de grafia</a>
+    <a href="#imprecisao">3. Imprecisão</a>
+    <a href="#declaracao">4. Declaração</a>
+    <a href="#outro">5. Outro</a>
+    <a href="#inline">6. Inline</a>
+    <a href="#novo">7. Conteúdo novo</a>
+    <a href="#excluido">8. Trecho excluído</a>
+    <a href="#resposta">9. Direito de resposta</a>
+    <a href="#botao-form">10. Botão de reportar</a>
+    <a href="#lista">11. Seção agregadora</a>
+  </div>
+  <div class="toc-section">
+    <strong>Parte V — Boas práticas e erros comuns</strong>
+    <a href="#erros-comuns">Erros comuns a evitar</a>
+    <a href="#boas-praticas">Princípios editoriais</a>
+    <a href="#faq">Perguntas frequentes</a>
+  </div>
+</nav>
+
+<!-- ============ PARTE I ============ -->
+<section class="chapter" id="intro">
+  <h2>O que é este manual</h2>
+  <p>Este manual é um guia prático para você, estudante de jornalismo, publicar notícias no portal de notícias da universidade com transparência sobre correções e atualizações. Ele parte de uma pergunta simples: <strong>o que fazer quando a gente erra?</strong></p>
+  <p>A resposta curta: admitir, explicar, corrigir visivelmente. A resposta longa — que é este manual — está em como fazer isso dentro do WordPress, usando o plugin que a redação do portal já tem instalado.</p>
+  <p>Você vai aprender a publicar uma matéria do zero, inserir correções quando elas forem necessárias, escolher o padrão certo para cada tipo de erro e evitar as armadilhas mais comuns.</p>
+  <div class="note">
+    <strong>Por que isso importa:</strong> uma pesquisa realizada em 200 sites de notícias brasileiros em 2025 mostrou que apenas 1,5% têm uma seção dedicada a correções — e 0% dos erros detectados em dez grandes sites durante dois meses de monitoramento resultaram em erratas publicadas. Esconder erro é prática dominante no jornalismo brasileiro. Este manual é um convite para fazer diferente.
+  </div>
+</section>
+
+<section class="chapter" id="plugin">
+  <h2>O plugin de correção, em uma frase</h2>
+  <p>O <strong>Plugin de Correção de Erros</strong> é uma ferramenta instalada no WordPress do portal que transforma marcações simples no código HTML em <strong>sinalizações visuais padronizadas</strong> para o leitor: quadros coloridos de correção, marcações inline, blocos temporários de "conteúdo novo", caixas de "trecho excluído", espaço para direito de resposta, botão de reportar erro e seção agregadora de correções.</p>
+  <p>Você não precisa saber programar para usá-lo. Precisa saber <strong>copiar e colar código</strong> no editor do WordPress — e preencher os campos que o plugin pede.</p>
+</section>
+
+<section class="chapter" id="editor">
+  <h2>Qual editor do WordPress você vai usar</h2>
+  <p>O WordPress oferece hoje três tipos de editor diferentes, dependendo de como o portal foi configurado:</p>
+
+  <h3>1. Editor Clássico (TinyMCE)</h3>
+  <p>O editor "antigo" do WordPress, com barra de ferramentas no estilo Word (botões de B, I, lista, etc.). Tem duas abas no canto superior direito: <strong>Visual</strong> e <strong>Código</strong>. É o mais usado em sites universitários que não migraram para Gutenberg.</p>
+
+  <h3>2. Gutenberg (editor de blocos)</h3>
+  <p>Introduzido em 2018, trabalha com "blocos" independentes. Para inserir HTML, você usa o bloco <strong>"HTML personalizado"</strong>, que se busca clicando no botão <strong>+</strong> dentro da página de edição.</p>
+
+  <h3>3. Elementor (page builder)</h3>
+  <p>Plugin separado, usado em muitos portais universitários pela facilidade visual. Quando um post tem Elementor, aparece um botão azul <strong>"Editar com Elementor"</strong> no topo. Para HTML, use o widget <strong>HTML</strong> arrastando para a página.</p>
+
+  <div class="warning">
+    <strong>Importante para TODOS os editores:</strong> cole o código HTML das correções sempre em modo "código" ou "HTML", <strong>nunca</strong> no modo visual. O editor visual limpa automaticamente os atributos <code>data-cde-*</code>, e o plugin para de funcionar — você vai ver o texto, mas sem as caixas coloridas de correção.
+  </div>
+</section>
+
+<!-- ============ PARTE II ============ -->
+<section class="chapter" id="publicar-basico">
+  <h2>Passo a passo: publicar uma notícia (sem correção)</h2>
+  <p>Antes de aprender as correções, vamos ao básico: como publicar uma matéria normal no portal.</p>
+
+  <ol class="steps">
+    <li><strong>Faça login</strong> no painel do WordPress em <code>seu-site.com.br/wp-admin</code>. Use seu usuário e senha da redação.</li>
+    <li><strong>No menu lateral esquerdo</strong>, clique em <strong>Posts → Adicionar novo</strong>.</li>
+    <li><strong>Digite o título</strong> da matéria no campo que aparece no topo. O título gera automaticamente o link permanente (URL) da notícia.</li>
+    <li><strong>Clique no corpo</strong> do editor e digite ou cole o texto da matéria. Formate como quiser: parágrafos, subtítulos (H2, H3), negrito, itálico, listas.</li>
+    <li><strong>Adicione uma imagem destacada</strong> no painel lateral direito, em "Imagem destacada". Essa é a imagem que vai aparecer na home do portal e nas redes sociais.</li>
+    <li><strong>Selecione a categoria</strong> no painel direito (Notícias, Entrevista, Cobertura, etc.) e adicione tags relevantes.</li>
+    <li><strong>Confira a prévia</strong> clicando em "Visualizar" (olho) no topo. Veja como a matéria vai ficar antes de publicar.</li>
+    <li><strong>Clique em "Publicar"</strong> (botão azul no canto superior direito). Pronto — a matéria está no ar.</li>
+  </ol>
+</section>
+
+<section class="chapter" id="inserir-correcao">
+  <h2>Como inserir uma correção na matéria já publicada</h2>
+  <p>Quando um erro é identificado — pelo editor, por um leitor, pela própria fonte — você precisa <strong>editar a matéria original</strong> e inserir um bloco de correção no local apropriado. Nunca crie uma segunda matéria para corrigir a primeira.</p>
+
+  <h3>Fluxo geral (vale para qualquer tipo de correção)</h3>
+  <ol class="steps">
+    <li><strong>Abra a matéria publicada</strong>: no painel, vá em Posts → Todos os posts → clique no título da matéria com erro.</li>
+    <li><strong>Vá para o modo Código</strong>: se o editor Clássico está aberto, clique na aba <strong>Código</strong> no canto superior direito. No Gutenberg, use o bloco "HTML personalizado". No Elementor, abra o widget HTML onde o texto está.</li>
+    <li><strong>Localize o ponto onde a correção vai</strong>: identifique onde o leitor precisa ser avisado da correção. Para erros no corpo, insira o bloco logo depois do parágrafo errado. Para correções que afetam toda a matéria, insira no início ou no fim.</li>
+    <li><strong>Cole o bloco de correção</strong>: copie o código do padrão apropriado da Parte IV deste manual e cole no local certo.</li>
+    <li><strong>Preencha os campos</strong>: ajuste todos os campos <code>data-cde-*</code> para refletir a correção específica. Datas no formato <code>AAAA-MM-DDTHH:MM:SS</code>.</li>
+    <li><strong>Corrija o texto do corpo da matéria também</strong>: o bloco de correção <strong>não substitui</strong> o texto corrigido — ele registra que a correção aconteceu. O texto do corpo precisa ser atualizado para a versão correta.</li>
+    <li><strong>Clique em "Atualizar"</strong> (botão azul). A matéria é atualizada mantendo a mesma URL original.</li>
+    <li><strong>Confira o resultado</strong>: visite a página pública da matéria e verifique se o bloco de correção aparece corretamente, com a cor certa, os textos nos lugares corretos.</li>
+  </ol>
+
+  <div class="warning">
+    <strong>Nunca:</strong> apague a matéria publicada para republicar uma versão corrigida com nova URL. Isso cria desinformação — leitores que compartilharam o link original chegam a um erro 404 e perdem a correção.
+  </div>
+</section>
+
+<!-- ============ PARTE III ============ -->
+<section class="chapter" id="qual-padrao">
+  <h2>Como escolher o padrão certo para cada caso</h2>
+  <p>O plugin oferece <strong>onze padrões diferentes</strong>, cada um para uma situação específica. Essa árvore de decisão ajuda a escolher rápido:</p>
+
+  <div class="decision">
+    <h4>É um erro?</h4>
+    <ul>
+      <li>Erro de <strong>número, atribuição ou fato</strong> objetivo? → use <a href="#factual"><strong>1. Erro factual (vermelho)</strong></a></li>
+      <li>Erro de <strong>digitação ou grafia</strong> que mudou o sentido? → use <a href="#grafia"><strong>2. Erro de grafia (azul escuro)</strong></a></li>
+      <li>Informação <strong>vaga ou imprecisa</strong> que ganhou precisão? → use <a href="#imprecisao"><strong>3. Imprecisão (laranja)</strong></a></li>
+      <li>Uma <strong>fala citada</strong> saiu errada? → use <a href="#declaracao"><strong>4. Retificação em declaração (roxo)</strong></a></li>
+      <li>O caso <strong>não encaixa</strong> em nenhum dos acima? → use <a href="#outro"><strong>5. Outro (cinza)</strong></a></li>
+      <li>É uma correção <strong>pontual de uma palavra ou expressão</strong> no meio do texto? → use <a href="#inline"><strong>6. Marcação inline (rosa)</strong></a></li>
+    </ul>
+  </div>
+
+  <div class="decision">
+    <h4>Não é erro, é outro tipo de modificação?</h4>
+    <ul>
+      <li>É <strong>informação nova</strong> que foi acrescentada (nota oficial, desdobramento)? → use <a href="#novo"><strong>7. Conteúdo novo (amarelo, 24h)</strong></a></li>
+      <li>Um trecho precisou ser <strong>removido</strong> da matéria? → use <a href="#excluido"><strong>8. Trecho excluído (cinza tracejado, 24h)</strong></a></li>
+      <li>É um <strong>direito de resposta</strong> judicial ou por acordo? → use <a href="#resposta"><strong>9. Direito de resposta (verde-azulado, permanente)</strong></a></li>
+    </ul>
+  </div>
+
+  <div class="decision">
+    <h4>Elementos estruturais da matéria/portal:</h4>
+    <ul>
+      <li>Quer deixar o <strong>botão de reportar erro</strong> ao final da matéria? → use <a href="#botao-form"><strong>10. Botão (preto)</strong></a></li>
+      <li>Quer criar uma <strong>página agregando todas as correções</strong> do portal? → use <a href="#lista"><strong>11. Seção agregadora (rosa)</strong></a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ PARTE IV - os 11 padrões em detalhe ============ -->
+
+<section class="pattern" id="factual">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #c0272d;">1</div>
+    <div>
+      <h2>Erro factual</h2>
+      <p class="pattern-color">Cor: <span style="color: #c0272d; font-weight: 600;">vermelho</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use quando a notícia publicou uma informação <strong>objetivamente errada</strong>: um número, uma data, uma atribuição, uma identificação de pessoa, local ou fato que não corresponde à realidade.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>O número de alunos matriculados foi divulgado como 12 mil quando o correto é 15 mil</li><li>Uma pesquisa foi atribuída a um pesquisador quando o autor é outro</li><li>A data da inauguração do laboratório foi informada como 10 de outubro quando foi 10 de novembro</li><li>O título do livro recém-publicado pela universidade apareceu com nome errado</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>tipo</code>, <code>motivo</code>, <code>data</code><br>
+     <strong>Opcionais:</strong> <code>titulo</code>, <code>antes</code>, <code>depois</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">O erro factual exige o <strong>antes/depois</strong> explícito. É o tipo de correção que precisa da maior transparência possível, porque está sendo admitido um erro objetivo. Pedir desculpas no campo <code>motivo</code> é uma boa prática.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-bloco
+     data-cde-tipo="factual"
+     data-cde-titulo="Correção — número de matriculados"
+     data-cde-motivo="Em versão anterior desta matéria, informamos que a UFBA tem 12 mil alunos de graduação matriculados em 2026. O número correto, segundo a Pró-Reitoria de Ensino de Graduação, é 15 mil. A informação foi corrigida e pedimos desculpas pela falha."
+     data-cde-antes="A UFBA conta com 12 mil alunos de graduação em 2026."
+     data-cde-depois="A UFBA conta com 15 mil alunos de graduação em 2026."
+     data-cde-data="2026-10-07T14:30:00">
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-bloco
+     data-cde-tipo=&quot;factual&quot;
+     data-cde-titulo=&quot;Correção — número de matriculados&quot;
+     data-cde-motivo=&quot;Em versão anterior desta matéria, informamos que a UFBA tem 12 mil alunos de graduação matriculados em 2026. O número correto, segundo a Pró-Reitoria de Ensino de Graduação, é 15 mil. A informação foi corrigida e pedimos desculpas pela falha.&quot;
+     data-cde-antes=&quot;A UFBA conta com 12 mil alunos de graduação em 2026.&quot;
+     data-cde-depois=&quot;A UFBA conta com 15 mil alunos de graduação em 2026.&quot;
+     data-cde-data=&quot;2026-10-07T14:30:00&quot;&gt;
+&lt;/div&gt;</code></pre>
+</section>
+<section class="pattern" id="grafia">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #1e3a8a;">2</div>
+    <div>
+      <h2>Erro de grafia</h2>
+      <p class="pattern-color">Cor: <span style="color: #1e3a8a; font-weight: 600;">azul escuro</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use quando um erro de digitação ou ortografia <strong>mudou o sentido</strong> da frase ou prejudicou a identificação de uma pessoa, lugar ou instituição. Não é para toda troca de letra — só para as que afetam a compreensão.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>O nome da professora saiu grafado como "Maria Souza" quando o correto é "Maria Sousa"</li><li>O nome do curso foi escrito como "Comunicação Sosial" em vez de "Social"</li><li>Uma palavra importante na declaração foi trocada: "ele não concorda" em vez de "ele concorda"</li><li>Troca de letra em sigla importante — "UFPA" no lugar de "UFBA"</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>tipo</code>, <code>motivo</code>, <code>data</code><br>
+     <strong>Opcionais:</strong> <code>titulo</code>, <code>antes</code>, <code>depois</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">Nem todo erro de digitação precisa de uma errata. A regra prática: <strong>se o erro de letra alterou o sentido ou confundiu a identificação de alguém, é correção de grafia. Se foi um "desta" em vez de "deste" sem afetar a compreensão, é correção silenciosa comum.</strong></p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-bloco
+     data-cde-tipo="grafia"
+     data-cde-titulo="Correção ortográfica — nome da professora"
+     data-cde-motivo="Em versão anterior, o nome da professora da Faculdade de Comunicação apareceu grafado como 'Maria Souza'. O nome correto é 'Maria Sousa', conforme o registro acadêmico oficial da UFBA."
+     data-cde-antes="A pesquisa, coordenada pela professora Maria Souza"
+     data-cde-depois="A pesquisa, coordenada pela professora Maria Sousa"
+     data-cde-data="2026-10-07T15:00:00">
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-bloco
+     data-cde-tipo=&quot;grafia&quot;
+     data-cde-titulo=&quot;Correção ortográfica — nome da professora&quot;
+     data-cde-motivo=&quot;Em versão anterior, o nome da professora da Faculdade de Comunicação apareceu grafado como &#x27;Maria Souza&#x27;. O nome correto é &#x27;Maria Sousa&#x27;, conforme o registro acadêmico oficial da UFBA.&quot;
+     data-cde-antes=&quot;A pesquisa, coordenada pela professora Maria Souza&quot;
+     data-cde-depois=&quot;A pesquisa, coordenada pela professora Maria Sousa&quot;
+     data-cde-data=&quot;2026-10-07T15:00:00&quot;&gt;
+&lt;/div&gt;</code></pre>
+</section>
+<section class="pattern" id="imprecisao">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #d97706;">3</div>
+    <div>
+      <h2>Imprecisão / Esclarecimento</h2>
+      <p class="pattern-color">Cor: <span style="color: #d97706; font-weight: 600;">laranja</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use quando a notícia tinha uma informação <strong>vaga, imprecisa ou incompleta</strong> que ganhou mais acurácia depois. Não é necessariamente um erro grave — é um refinamento que precisa ser transparente para o leitor.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>A matéria dizia "cerca de 500 pessoas participaram do evento" e depois a assessoria confirmou que foram 623</li><li>O prazo foi informado como "os próximos meses" e a reitoria esclareceu que são 90 dias</li><li>A verba foi descrita como "milhões de reais" e depois você soube que são R$ 2,3 milhões</li><li>A notícia dizia que o estudo foi "recentemente publicado" quando ele é de 2020</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>tipo</code>, <code>motivo</code>, <code>data</code><br>
+     <strong>Opcionais:</strong> <code>titulo</code>, <code>antes</code>, <code>depois</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">Imprecisão não é a mesma coisa que erro factual. <strong>Erro factual = informação errada. Imprecisão = informação vaga que ficou precisa.</strong> O título do campo <code>titulo</code> pode ser "Esclarecimento" em vez de "Correção" — faz diferença de tom.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-bloco
+     data-cde-tipo="imprecisao"
+     data-cde-titulo="Esclarecimento — número de participantes"
+     data-cde-motivo="A versão original informava que 'cerca de 500 pessoas participaram da aula inaugural'. Após o fechamento oficial da lista de presença pela coordenação do curso, o número confirmado é de 623 participantes."
+     data-cde-antes="Cerca de 500 pessoas participaram da aula inaugural."
+     data-cde-depois="623 pessoas participaram da aula inaugural, segundo a lista oficial da coordenação."
+     data-cde-data="2026-10-07T16:00:00">
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-bloco
+     data-cde-tipo=&quot;imprecisao&quot;
+     data-cde-titulo=&quot;Esclarecimento — número de participantes&quot;
+     data-cde-motivo=&quot;A versão original informava que &#x27;cerca de 500 pessoas participaram da aula inaugural&#x27;. Após o fechamento oficial da lista de presença pela coordenação do curso, o número confirmado é de 623 participantes.&quot;
+     data-cde-antes=&quot;Cerca de 500 pessoas participaram da aula inaugural.&quot;
+     data-cde-depois=&quot;623 pessoas participaram da aula inaugural, segundo a lista oficial da coordenação.&quot;
+     data-cde-data=&quot;2026-10-07T16:00:00&quot;&gt;
+&lt;/div&gt;</code></pre>
+</section>
+<section class="pattern" id="declaracao">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #7c3aed;">4</div>
+    <div>
+      <h2>Retificação em declaração</h2>
+      <p class="pattern-color">Cor: <span style="color: #7c3aed; font-weight: 600;">roxo</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use quando uma <strong>fala citada</strong> na matéria foi transcrita de forma incorreta, incompleta ou descontextualizada. Comum em entrevistas, coletivas de imprensa e cobertura de aulas magnas, defesas de tese ou pronunciamentos oficiais.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>A fala do reitor foi transcrita faltando um "não" que mudou totalmente o sentido</li><li>Uma frase do convidado da aula inaugural foi recortada e saiu descontextualizada</li><li>A assessoria do pesquisador entrou em contato pedindo retificação de uma declaração</li><li>O estudante entrevistado reclamou que suas palavras foram alteradas na transcrição</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>tipo</code>, <code>motivo</code>, <code>data</code><br>
+     <strong>Opcionais:</strong> <code>titulo</code>, <code>antes</code>, <code>depois</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">Esse tipo de correção é delicado — a redação precisa ter <strong>a gravação ou algum registro</strong> da fala original para confirmar o que foi dito. Se a correção for a pedido da fonte, mencione isso no campo <code>motivo</code>, para manter transparência sobre a origem da retificação.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-bloco
+     data-cde-tipo="declaracao"
+     data-cde-titulo="Retificação de declaração"
+     data-cde-motivo="A assessoria do reitor entrou em contato com a redação informando que a frase citada foi transcrita de forma incompleta. A versão corrigida reflete o que foi efetivamente dito na coletiva de imprensa, segundo a gravação oficial da assessoria."
+     data-cde-antes="A universidade vai cortar o programa de bolsas no próximo semestre."
+     data-cde-depois="A universidade vai reformular o programa de bolsas no próximo semestre, mantendo o número de beneficiários."
+     data-cde-data="2026-10-07T17:00:00">
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-bloco
+     data-cde-tipo=&quot;declaracao&quot;
+     data-cde-titulo=&quot;Retificação de declaração&quot;
+     data-cde-motivo=&quot;A assessoria do reitor entrou em contato com a redação informando que a frase citada foi transcrita de forma incompleta. A versão corrigida reflete o que foi efetivamente dito na coletiva de imprensa, segundo a gravação oficial da assessoria.&quot;
+     data-cde-antes=&quot;A universidade vai cortar o programa de bolsas no próximo semestre.&quot;
+     data-cde-depois=&quot;A universidade vai reformular o programa de bolsas no próximo semestre, mantendo o número de beneficiários.&quot;
+     data-cde-data=&quot;2026-10-07T17:00:00&quot;&gt;
+&lt;/div&gt;</code></pre>
+</section>
+<section class="pattern" id="outro">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #64748b;">5</div>
+    <div>
+      <h2>Outro tipo de correção</h2>
+      <p class="pattern-color">Cor: <span style="color: #64748b; font-weight: 600;">cinza</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use quando o caso <strong>não encaixa</strong> nos quatro tipos acima. Útil para correções de créditos (foto, autoria, revisão), ajustes de atribuição institucional ou qualquer caso incomum que ainda assim precise de transparência.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>O crédito da fotografia foi dado ao fotógrafo errado</li><li>A autoria da reportagem precisou ser corrigida porque faltou um co-autor</li><li>A matéria foi marcada como "notícia" mas é na verdade um artigo de opinião</li><li>O link para o estudo citado estava errado e levava para outra pesquisa</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>tipo</code>, <code>motivo</code>, <code>data</code><br>
+     <strong>Opcionais:</strong> <code>titulo</code>, <code>antes</code>, <code>depois</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">Use com moderação. A padronização dos cinco tipos ajuda o leitor a entender rapidamente o que mudou. <strong>Se você usar "outro" muitas vezes, provavelmente está perdendo oportunidade de classificar melhor</strong> — reveja se não cabe algum dos quatro tipos específicos.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-bloco
+     data-cde-tipo="outro"
+     data-cde-titulo="Correção de crédito"
+     data-cde-motivo="A fotografia que ilustra esta matéria foi inicialmente creditada à Assessoria da UFBA. O crédito correto é do fotógrafo Pedro Lima, estudante do curso de Jornalismo da UFBA, que cedeu a imagem para uso editorial. Pedimos desculpas pela falha."
+     data-cde-antes="Foto: Assessoria UFBA"
+     data-cde-depois="Foto: Pedro Lima"
+     data-cde-data="2026-10-07T17:30:00">
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-bloco
+     data-cde-tipo=&quot;outro&quot;
+     data-cde-titulo=&quot;Correção de crédito&quot;
+     data-cde-motivo=&quot;A fotografia que ilustra esta matéria foi inicialmente creditada à Assessoria da UFBA. O crédito correto é do fotógrafo Pedro Lima, estudante do curso de Jornalismo da UFBA, que cedeu a imagem para uso editorial. Pedimos desculpas pela falha.&quot;
+     data-cde-antes=&quot;Foto: Assessoria UFBA&quot;
+     data-cde-depois=&quot;Foto: Pedro Lima&quot;
+     data-cde-data=&quot;2026-10-07T17:30:00&quot;&gt;
+&lt;/div&gt;</code></pre>
+</section>
+<section class="pattern" id="inline">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #be185d;">6</div>
+    <div>
+      <h2>Marcação inline</h2>
+      <p class="pattern-color">Cor: <span style="color: #be185d; font-weight: 600;">rosa (marcação no texto)</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use quando a correção é <strong>muito pontual</strong> — uma única palavra, nome ou número no meio de um parágrafo — e você quer que o leitor veja exatamente onde foi a mudança, sem interromper a leitura com um quadro grande.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>O horário do evento estava errado dentro de um parágrafo (14h → 16h)</li><li>O nome do departamento acadêmico foi corrigido inline no texto</li><li>A sigla de uma pró-reitoria apareceu trocada em uma única frase</li><li>Um número de página de referência precisava ser ajustado dentro da citação</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>antes</code>, <code>motivo</code><br>
+     <strong>Opcionais:</strong> <code>(nenhum — não aceita título, data, antes/depois estruturado)</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">O inline é feito com <code>&lt;span&gt;</code>, não <code>&lt;div&gt;</code>. Ele vai <strong>dentro de um parágrafo</strong>, envolvendo exatamente o texto corrigido. Ao passar o mouse (ou tocar no celular), aparece um balãozinho com a explicação. <strong>Use só para correções muito pequenas e específicas.</strong></p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <p>A aula inaugural do semestre, promovida pela Faculdade de Comunicação, começou às
+<span data-cde-inline
+      data-cde-antes="14h"
+      data-cde-motivo="A versão original informava que o evento começou às 14h; o horário correto foi 16h, segundo a programação oficial da Faculdade.">16h</span>
+desta segunda-feira, no Pavilhão de Aulas.</p>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;p&gt;A aula inaugural do semestre, promovida pela Faculdade de Comunicação, começou às
+&lt;span data-cde-inline
+      data-cde-antes=&quot;14h&quot;
+      data-cde-motivo=&quot;A versão original informava que o evento começou às 14h; o horário correto foi 16h, segundo a programação oficial da Faculdade.&quot;&gt;16h&lt;/span&gt;
+desta segunda-feira, no Pavilhão de Aulas.&lt;/p&gt;</code></pre>
+</section>
+<section class="pattern" id="novo">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #eab308;">7</div>
+    <div>
+      <h2>Conteúdo novo</h2>
+      <p class="pattern-color">Cor: <span style="color: #eab308; font-weight: 600;">amarelo (temporário)</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use quando a matéria <strong>recebeu uma informação nova</strong> depois de publicada — mas não é correção, é atualização. Nota oficial que chegou depois, declaração complementar, novo desdobramento de um fato em andamento.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>A reitoria mandou uma nota de resposta depois da matéria publicada</li><li>Novos dados foram divulgados pela secretaria do curso</li><li>Uma segunda fonte confirmou a informação em entrevista posterior</li><li>A assessoria enviou um esclarecimento complementar (não contestatório)</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>data</code><br>
+     <strong>Opcionais:</strong> <code>(o conteúdo em si vai como texto dentro do bloco, não como atributo)</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">Este bloco é <strong>temporário</strong> — o destaque amarelo some automaticamente após 24 horas, mas o texto permanece integrado ao corpo da matéria. É a solução perfeita para situações em que a matéria "respira" ao longo do dia, com desdobramentos novos.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-novo data-cde-data="2026-10-07T18:00:00">
+  <p>Em nota enviada à redação após a publicação desta matéria, a Pró-Reitoria de Ensino de Graduação informou que o programa de bolsas será mantido integralmente no próximo semestre, com ampliação de 15% no número de beneficiários atendidos.</p>
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-novo data-cde-data=&quot;2026-10-07T18:00:00&quot;&gt;
+  &lt;p&gt;Em nota enviada à redação após a publicação desta matéria, a Pró-Reitoria de Ensino de Graduação informou que o programa de bolsas será mantido integralmente no próximo semestre, com ampliação de 15% no número de beneficiários atendidos.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+</section>
+<section class="pattern" id="excluido">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #6b7280;">8</div>
+    <div>
+      <h2>Trecho excluído</h2>
+      <p class="pattern-color">Cor: <span style="color: #6b7280; font-weight: 600;">cinza tracejado (temporário)</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use quando um <strong>trecho da matéria precisou ser removido</strong> por imprecisão não confirmável, por proteção de uma fonte, por refinamento de edição ou por decisão editorial. Nunca despublique sem deixar rastro.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>Uma informação não pôde ser confirmada em segunda fonte e foi tirada</li><li>Um nome de fonte foi retirado para proteção depois de ela pedir anonimato</li><li>Um parágrafo especulativo foi retirado por decisão editorial</li><li>Uma citação precisou ser removida porque a fonte alegou que foi gravada sem autorização</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>data</code>, <code>original</code>, <code>explicacao</code><br>
+     <strong>Opcionais:</strong> <em>nenhum</em></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">Este é o único padrão em que você <strong>registra o que foi tirado dentro do próprio atributo</strong> (<code>data-cde-original</code>), para manter o rastro editorial — mesmo depois que o bloco some, fica documentado nos backups do site. Após 24 horas o bloco desaparece da página pública, mas o registro editorial permanece.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-excluido
+     data-cde-data="2026-10-07T18:30:00"
+     data-cde-original="Fontes internas da reitoria confirmaram à nossa redação que novos cortes orçamentários estão em discussão para 2027."
+     data-cde-explicacao="O trecho foi removido porque a informação não pôde ser confirmada em segunda fonte dentro da janela de apuração desta matéria. A questão segue em acompanhamento pela redação.">
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-excluido
+     data-cde-data=&quot;2026-10-07T18:30:00&quot;
+     data-cde-original=&quot;Fontes internas da reitoria confirmaram à nossa redação que novos cortes orçamentários estão em discussão para 2027.&quot;
+     data-cde-explicacao=&quot;O trecho foi removido porque a informação não pôde ser confirmada em segunda fonte dentro da janela de apuração desta matéria. A questão segue em acompanhamento pela redação.&quot;&gt;
+&lt;/div&gt;</code></pre>
+</section>
+<section class="pattern" id="resposta">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #0d9488;">9</div>
+    <div>
+      <h2>Direito de resposta</h2>
+      <p class="pattern-color">Cor: <span style="color: #0d9488; font-weight: 600;">verde-azulado (permanente)</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use para publicar <strong>direito de resposta</strong> concedido judicialmente ou por acordo entre as partes. O texto da resposta deve ser publicado <strong>na íntegra</strong>, sem edição editorial. É obrigação legal e ética.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>Um professor citado na matéria obteve direito de resposta por decisão judicial</li><li>A direção de uma unidade universitária solicitou direito de resposta e foi concedido por acordo</li><li>Um estudante entrevistado alegou que foi mal representado e a redação concedeu espaço de resposta</li><li>Uma empresa parceira da universidade exerceu direito de resposta após matéria crítica</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>titulo</code>, <code>data</code>, <code>de</code>, <code>texto</code><br>
+     <strong>Opcionais:</strong> <code>decisao</code>, <code>introducao</code>, <code>rodape</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">Este bloco <strong>nunca desaparece</strong>, diferente dos de 24h. É permanente, porque é documento legal. O texto do campo <code>data-cde-texto</code> deve ser <strong>exatamente</strong> o que a parte forneceu, sem qualquer edição da redação — nem para corrigir pontuação. É intocável.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-resposta
+     data-cde-titulo="Direito de resposta"
+     data-cde-data="2026-10-08T10:00:00"
+     data-cde-de="Prof. Dr. João dos Santos, por meio de sua assessoria jurídica"
+     data-cde-decisao="Concedido por acordo entre as partes"
+     data-cde-introducao="Em cumprimento do acordo firmado entre as partes, publicamos abaixo, na íntegra, o direito de resposta concedido ao Prof. Dr. João dos Santos."
+     data-cde-texto="Em matéria publicada por este veículo no dia 7 de outubro de 2026, fui mencionado como responsável por decisões administrativas que não me cabiam. Esclareço que não ocupo cargo de gestão na faculdade desde 2024 e que as decisões citadas são de responsabilidade da atual direção. Reitero meu compromisso com a transparência acadêmica."
+     data-cde-rodape="O veículo mantém a íntegra da matéria original disponível, com esta resposta anexada em cumprimento do acordo firmado.">
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-resposta
+     data-cde-titulo=&quot;Direito de resposta&quot;
+     data-cde-data=&quot;2026-10-08T10:00:00&quot;
+     data-cde-de=&quot;Prof. Dr. João dos Santos, por meio de sua assessoria jurídica&quot;
+     data-cde-decisao=&quot;Concedido por acordo entre as partes&quot;
+     data-cde-introducao=&quot;Em cumprimento do acordo firmado entre as partes, publicamos abaixo, na íntegra, o direito de resposta concedido ao Prof. Dr. João dos Santos.&quot;
+     data-cde-texto=&quot;Em matéria publicada por este veículo no dia 7 de outubro de 2026, fui mencionado como responsável por decisões administrativas que não me cabiam. Esclareço que não ocupo cargo de gestão na faculdade desde 2024 e que as decisões citadas são de responsabilidade da atual direção. Reitero meu compromisso com a transparência acadêmica.&quot;
+     data-cde-rodape=&quot;O veículo mantém a íntegra da matéria original disponível, com esta resposta anexada em cumprimento do acordo firmado.&quot;&gt;
+&lt;/div&gt;</code></pre>
+</section>
+<section class="pattern" id="botao-form">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #111111;">10</div>
+    <div>
+      <h2>Botão de reportar erro</h2>
+      <p class="pattern-color">Cor: <span style="color: #111111; font-weight: 600;">preto (botão)</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Coloque ao <strong>final de toda matéria</strong>. É o canal para o leitor comunicar à redação que encontrou um erro. Clicando no botão, abre um formulário modal com campos para tipo do erro, descrição e e-mail do leitor para resposta.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>Rodapé de toda matéria publicada no portal da universidade</li><li>Final de edições especiais ou dossiês acadêmicos</li><li>Fim de reportagens longas, onde a probabilidade de erro é maior</li><li>Perto do bloco de "Topo da página" ou outros elementos de navegação</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>(nenhum — basta o atributo data-cde-abrir-form)</code><br>
+     <strong>Opcionais:</strong> <em>nenhum</em></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">Padronize onde o botão aparece — <strong>sempre no mesmo lugar, com o mesmo texto</strong> em todas as matérias do site. Isso cria familiaridade no leitor e aumenta a chance de ele reportar erros. No mapeamento de 200 sites de notícias feito pela pesquisa, apenas 17% têm esse canal.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <p style="text-align: center; margin: 2em 0;">
+  <button data-cde-abrir-form>Comunicar erro nesta matéria</button>
+</p>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;p style=&quot;text-align: center; margin: 2em 0;&quot;&gt;
+  &lt;button data-cde-abrir-form&gt;Comunicar erro nesta matéria&lt;/button&gt;
+&lt;/p&gt;</code></pre>
+</section>
+<section class="pattern" id="lista">
+  <div class="pattern-header">
+    <div class="pattern-num" style="background: #b0347d;">11</div>
+    <div>
+      <h2>Seção agregadora de correções</h2>
+      <p class="pattern-color">Cor: <span style="color: #b0347d; font-weight: 600;">rosa (seção)</span></p>
+    </div>
+  </div>
+
+  <h3>Quando usar</h3>
+  <p>Use para montar uma <strong>página dedicada</strong> que agrega todas as correções do site (ou de uma cobertura específica — eleições, pandemia, greve universitária). É o equivalente à seção "Erramos" da Folha, UOL ou Estadão.</p>
+
+  <h3>Exemplos de situação</h3>
+  <ul class="scenarios">
+    <li>Página "Correções" acessível pelo menu principal do portal</li><li>Página específica para uma cobertura acadêmica longa, com várias matérias</li><li>Rodapé da home do portal, com as correções mais recentes</li><li>Seção interna de boletim editorial para a comunidade universitária</li>
+  </ul>
+
+  <h3>Campos a preencher</h3>
+  <p><strong>Obrigatórios:</strong> <code>(nenhum — a lista é preenchida automaticamente pelo plugin)</code><br>
+     <strong>Opcionais:</strong> <code>titulo</code>, <code>subtitulo</code></p>
+
+  <h3>Dica de ouro</h3>
+  <p class="dica">No mapeamento da pesquisa, apenas <strong>3 em 200 sites de notícias brasileiros têm essa seção</strong>: Folha, UOL e Estadão. Ter uma seção agregadora é um avanço de transparência. <strong>Deixe acessível pelo menu principal</strong> do site, não só pelo rodapé.</p>
+
+  <h3>Como aparece ao leitor</h3>
+  <div class="live">
+    <div data-cde-lista
+     data-cde-titulo="Correções do portal"
+     data-cde-subtitulo="Todas as correções, retificações, esclarecimentos e direitos de resposta publicados no portal de notícias da universidade.">
+</div>
+  </div>
+
+  <h3>Código para copiar e colar</h3>
+  <pre><code>&lt;div data-cde-lista
+     data-cde-titulo=&quot;Correções do portal&quot;
+     data-cde-subtitulo=&quot;Todas as correções, retificações, esclarecimentos e direitos de resposta publicados no portal de notícias da universidade.&quot;&gt;
+&lt;/div&gt;</code></pre>
+</section>
+
+<!-- ============ PARTE V ============ -->
+<section class="chapter" id="erros-comuns">
+  <h2>Erros comuns a evitar</h2>
+
+  <h3>1. Colar o código no editor Visual</h3>
+  <p>Esse é <strong>o</strong> erro mais frequente. O editor Visual (TinyMCE do WordPress Clássico, Gutenberg padrão, "Editor de Texto" do Elementor) remove os atributos <code>data-cde-*</code> automaticamente. Resultado: você vê o texto, mas as caixas coloridas nunca aparecem.</p>
+  <p><strong>Solução:</strong> sempre use aba <strong>Código</strong> (Clássico), bloco <strong>HTML personalizado</strong> (Gutenberg) ou widget <strong>HTML</strong> (Elementor).</p>
+
+  <h3>2. Esquecer o campo data</h3>
+  <p>Vários blocos (<code>novo</code>, <code>excluido</code>) dependem do campo <code>data-cde-data</code> para calcular quando devem desaparecer. Se você esquece o campo, o plugin não sabe quando iniciar a janela de 24h.</p>
+  <p><strong>Solução:</strong> sempre preencha <code>data-cde-data</code> no formato <code>AAAA-MM-DDTHH:MM:SS</code> (exemplo: <code>2026-10-07T14:30:00</code>). Use a data e hora reais da correção.</p>
+
+  <h3>3. Criar uma nova matéria em vez de corrigir a original</h3>
+  <p>Alguns iniciantes, ao detectar um erro grave, apagam a matéria e publicam outra. Isso <strong>quebra todos os links</strong> que já foram compartilhados nas redes sociais, WhatsApp e newsletters.</p>
+  <p><strong>Solução:</strong> sempre edite a matéria original na mesma URL. Insira o bloco de correção dentro dela.</p>
+
+  <h3>4. Preencher o campo "motivo" de forma vaga</h3>
+  <p>Escrever "O texto foi corrigido" não ajuda ninguém. O leitor quer saber <strong>o que</strong> foi corrigido e <strong>por quê</strong>.</p>
+  <p><strong>Solução:</strong> use o modelo "Em versão anterior, publicamos X. O correto é Y, conforme fonte Z. A informação foi corrigida." Transparência total.</p>
+
+  <h3>5. Não corrigir o texto do corpo da matéria</h3>
+  <p>Alguns iniciantes acham que basta inserir o bloco de correção. Não basta — o texto do corpo também precisa ser atualizado para a versão correta.</p>
+  <p><strong>Solução:</strong> ao inserir qualquer bloco de correção, <strong>também</strong> edite o texto da matéria para refletir a informação correta.</p>
+
+  <h3>6. Esquecer de propagar a correção nas redes sociais</h3>
+  <p>Se a notícia errada foi para o Instagram, X ou WhatsApp do portal, a correção precisa ir também para esses canais.</p>
+  <p><strong>Solução:</strong> depois de corrigir no site, poste uma errata nas redes sociais e envie uma mensagem no WhatsApp do portal, se houver.</p>
+</section>
+
+<section class="chapter" id="boas-praticas">
+  <h2>Princípios editoriais</h2>
+  <p>Mais importante do que saber usar os códigos é saber <strong>por que</strong> você está usando. Alguns princípios da pesquisa que embasa este plugin:</p>
+
+  <h3>Todo jornalismo erra. Esconder o erro é o problema.</h3>
+  <p>Errar faz parte do fluxo diário. O que corrói a credibilidade do portal não é o erro em si — é a tentativa de escondê-lo.</p>
+
+  <h3>Transparência é regra, não exceção.</h3>
+  <p>O leitor precisa saber que a notícia mudou, o que mudou e por quê. "Atualização" sem explicação é frequentemente correção disfarçada.</p>
+
+  <h3>Corrigir é parte do ofício.</h3>
+  <p>A correção não é admissão de fracasso. É afirmação de responsabilidade editorial. Quanto mais visível a correção, mais o portal se afirma como responsável pela informação que publica.</p>
+
+  <h3>A forma como se corrige importa tanto quanto evitar o erro.</h3>
+  <p>Corrigir de maneira direta e explicativa mostra preocupação com a verdade factual. A demora na admissão do erro pode transformar uma correção pontual em crise.</p>
+
+  <h3>Nomear a cadeia de responsabilidade.</h3>
+  <p>A decisão editorial sobre como corrigir erros mais graves deve estar nas mãos de alguém previamente determinado — editor-chefe, diretor da redação, coordenador. Isso evita que a responsabilidade recaia só sobre o estudante que escreveu a matéria.</p>
+</section>
+
+<section class="chapter" id="faq">
+  <h2>Perguntas frequentes</h2>
+
+  <h3>Posso usar mais de um tipo de correção na mesma matéria?</h3>
+  <p>Sim. Uma matéria pode ter várias correções de tipos diferentes. Cada erro recebe seu bloco próprio, no local apropriado.</p>
+
+  <h3>Como testo se o plugin está funcionando antes de publicar?</h3>
+  <p>Salve como rascunho e clique em "Visualizar" ou "Preview". O rascunho não vai ao ar, mas você vê como ficaria.</p>
+
+  <h3>Posso remover um bloco de correção depois de publicado?</h3>
+  <p>Tecnicamente sim, mas <strong>não deve</strong>. Blocos de correção são registro público do erro cometido. Removê-los é escondê-los. A exceção são os blocos de 24h (<code>novo</code> e <code>excluido</code>), que o próprio plugin faz desaparecer automaticamente.</p>
+
+  <h3>O que faço se o leitor reportar um erro que não é erro?</h3>
+  <p>Responda ao leitor mesmo assim. "Agradecemos sua mensagem. Verificamos a informação e ela está correta segundo [fonte]. Qualquer dúvida, estamos à disposição." Nem toda comunicação de erro vira correção, mas toda merece resposta.</p>
+
+  <h3>E se o leitor insistir que o portal está errado?</h3>
+  <p>Verifique com uma segunda fonte independente. Se o leitor tiver razão, agradeça publicamente (com autorização dele) e publique a correção. Creditar o leitor é um gesto de respeito que fortalece a relação com a audiência.</p>
+
+  <h3>Quem decide se uma correção precisa de errata visível?</h3>
+  <p>A pesquisa recomenda que a decisão editorial sobre casos graves esteja nas mãos de um responsável previamente definido. No portal universitário, isso costuma ser o editor-chefe, o professor responsável ou o coordenador editorial. Em dúvida, consulte.</p>
+</section>
+
+<footer>
+  <p>Material pedagógico produzido no âmbito da pesquisa <em>Protocolo de gestão para correção de erros no jornalismo digital</em><br>
+  nº PPP0014/2024 · Edital Fapesb/CNPq nº 004/2023 · Pesquisadora responsável: Lívia de Souza Vieira (UFBA) · <a href="mailto:livia.vieira@ufba.br" style="color: #b0347d;">livia.vieira@ufba.br</a></p>
+</footer>
+
+<script>
+
+/*
+ * ================================================================
+ *  Plugin de Correção de Erros — JavaScript
+ *  API global: window.CorrecaoDeErros
+ *
+ *  Este arquivo contém somente o comportamento do plugin.
+ *  Inclua-o via <script src="cde.js"><\/script> antes do </body>
+ *  do seu template. O plugin inicia automaticamente ao carregar
+ *  o DOM; para customizar, chame CorrecaoDeErros.init({ ... }).
+ *
+ *  Versão: 1.0
+ *  Origem: pesquisa "Protocolo de gestão para correção de erros
+ *  no jornalismo digital" (nº PPP0014/2024 — Fapesb/CNPq).
+ * ================================================================
+ */
+
+(function(global) {
+  "use strict";
+
+  // ---- Rótulos padrão (pt-BR). Podem ser sobrescritos em init({ rotulos }) ----
+  var rotulosPadrao = {
+    botaoReportar: "Comunicar erro",
+    botaoFlutuante: "Comunicar erro",
+    modalTitulo: "Comunique um erro",
+    modalSubtitulo: "Ajude a melhorar a precisão desta matéria. Sua mensagem será revisada pela editoria.",
+    formTipo: "Tipo do erro",
+    formDescricao: "Descrição",
+    formDescricaoPlaceholder: "Descreva o que está incorreto e, se possível, indique a fonte.",
+    formEmail: "E-mail (opcional)",
+    formEmailPlaceholder: "voce@email.com",
+    formEnviar: "Enviar comunicação",
+    formEnviando: "Enviando...",
+    formFechar: "Fechar",
+    sucessoTitulo: "Recebemos sua comunicação",
+    sucessoTexto: "A editoria vai avaliar e retornar se precisar de mais informações.",
+    tipoFactual: "Erro factual",
+    tipoGrafia: "Erro de grafia",
+    tipoImprecisao: "Imprecisão (número ou informação vaga)",
+    tipoDeclaracao: "Erro em declaração ou citação",
+    tipoOutro: "Outro",
+    listaVazio: "Nenhuma correção registrada nesta matéria.",
+    filtroTodas: "Todas",
+    filtroRecentes: "Recentes (24h)",
+    filtroFactual: "Factual",
+    filtroGrafia: "Grafia",
+    filtroImprecisao: "Imprecisão",
+    filtroDeclaracao: "Declaração",
+    badgeRecente: "Nova"
+  };
+
+  // ---- Configuração global ----
+  var config = {
+    endpoint: null,
+    janelaRecenteHoras: 24,
+    botaoFlutuante: false,
+    posicaoBotao: "bottom-right",
+    aoReportar: null,
+    rotulos: {}
+  };
+
+  // Registro de correções (de data-attributes + adicionadas via API)
+  var registro = [];
+  var elementoFocoAntes = null;
+
+  // ---------- Utilitários ----------
+  function rotulo(chave) {
+    return (config.rotulos && config.rotulos[chave]) || rotulosPadrao[chave] || chave;
+  }
+  function htmlEscape(txt) {
+    if (txt == null) return "";
+    return String(txt)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function formatarData(isoOuString) {
+    if (!isoOuString) return "";
+    var d = new Date(isoOuString);
+    if (isNaN(d.getTime())) return isoOuString;
+    try {
+      return d.toLocaleString("pt-BR", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      });
+    } catch (e) { return d.toISOString(); }
+  }
+  function eRecente(isoOuString) {
+    if (!isoOuString) return false;
+    var d = new Date(isoOuString);
+    if (isNaN(d.getTime())) return false;
+    var agora = Date.now();
+    var limite = config.janelaRecenteHoras * 60 * 60 * 1000;
+    return (agora - d.getTime()) <= limite && (agora - d.getTime()) >= 0;
+  }
+  function criarEl(tag, classes, htmlInterno) {
+    var el = document.createElement(tag);
+    if (classes) el.className = classes;
+    if (htmlInterno != null) el.innerHTML = htmlInterno;
+    return el;
+  }
+
+  // ---------- Transformação de correções inline ----------
+  function transformarInline() {
+    var spans = document.querySelectorAll("[data-cde-inline]:not([data-cde-pronto])");
+    spans.forEach(function(span) {
+      span.classList.add("cde-inline");
+      span.setAttribute("data-cde-pronto", "true");
+      span.setAttribute("tabindex", "0");
+      var antes = span.getAttribute("data-cde-antes") || "";
+      var motivo = span.getAttribute("data-cde-motivo") || "";
+      var tooltipHTML = "";
+      if (motivo) tooltipHTML += "<strong>Correção.</strong> " + htmlEscape(motivo);
+      if (antes) tooltipHTML += "<span class=\"cde-tooltip-antes\">Antes: " + htmlEscape(antes) + "</span>";
+      if (tooltipHTML) {
+        span.setAttribute("aria-label", "Correção. Antes: " + antes + (motivo ? ". Motivo: " + motivo : ""));
+        var mostrarTooltip = function() {
+          esconderTodosTooltips();
+          var tip = criarEl("span", "cde-inline-tooltip", tooltipHTML);
+          span.appendChild(tip);
+        };
+        span.addEventListener("mouseenter", mostrarTooltip);
+        span.addEventListener("focus", mostrarTooltip);
+        span.addEventListener("mouseleave", esconderTodosTooltips);
+        span.addEventListener("blur", esconderTodosTooltips);
+      }
+    });
+  }
+  function esconderTodosTooltips() {
+    document.querySelectorAll(".cde-inline-tooltip").forEach(function(t) { t.remove(); });
+  }
+
+  // ---------- Transformação de blocos de errata ----------
+  function transformarBlocos() {
+    var blocos = document.querySelectorAll("[data-cde-bloco]:not([data-cde-pronto])");
+    blocos.forEach(function(bloco) {
+      var dados = lerDadosDoElemento(bloco);
+      bloco.setAttribute("data-cde-pronto", "true");
+      registro.push(dados);
+      renderizarBlocoEm(bloco, dados);
+    });
+  }
+  function lerDadosDoElemento(el) {
+    return {
+      tipo: el.getAttribute("data-cde-tipo") || "outro",
+      titulo: el.getAttribute("data-cde-titulo") || "",
+      motivo: el.getAttribute("data-cde-motivo") || "",
+      antes: el.getAttribute("data-cde-antes") || "",
+      depois: el.getAttribute("data-cde-depois") || "",
+      data: el.getAttribute("data-cde-data") || ""
+    };
+  }
+  function rotuloTipo(tipo) {
+    var mapa = {
+      factual: "tipoFactual",
+      grafia: "tipoGrafia",
+      imprecisao: "tipoImprecisao",
+      declaracao: "tipoDeclaracao",
+      outro: "tipoOutro"
+    };
+    return rotulo(mapa[tipo] || "tipoOutro");
+  }
+  function renderizarBlocoEm(elemento, dados) {
+    var recente = eRecente(dados.data);
+    elemento.className = "cde-bloco" + (recente ? " cde-recente" : "");
+    elemento.innerHTML = [
+      '<div class="cde-bloco-header">',
+        '<span class="cde-badge cde-tipo-' + htmlEscape(dados.tipo) + '">' + htmlEscape(rotuloTipo(dados.tipo)) + '</span>',
+        recente ? '<span class="cde-badge cde-badge-recente">' + htmlEscape(rotulo("badgeRecente")) + '</span>' : '',
+        dados.data ? '<span class="cde-bloco-data">' + htmlEscape(formatarData(dados.data)) + '</span>' : '',
+      '</div>',
+      dados.titulo ? '<div class="cde-bloco-titulo">' + htmlEscape(dados.titulo) + '</div>' : '',
+      dados.motivo ? '<p class="cde-bloco-motivo">' + htmlEscape(dados.motivo) + '</p>' : '',
+      (dados.antes || dados.depois) ? (
+        '<div class="cde-diff">' +
+          (dados.antes ? '<div class="cde-diff-antes">' + htmlEscape(dados.antes) + '</div>' : '') +
+          (dados.depois ? '<div class="cde-diff-depois">' + htmlEscape(dados.depois) + '</div>' : '') +
+        '</div>'
+      ) : ''
+    ].join("");
+  }
+
+  // ---------- Renderização de lista/arquivo ----------
+  var filtroAtual = "todas";
+  function transformarListas() {
+    var listas = document.querySelectorAll("[data-cde-lista]:not([data-cde-pronto])");
+    listas.forEach(function(container) {
+      container.setAttribute("data-cde-pronto", "true");
+      renderLista(container);
+    });
+  }
+  function renderLista(container) {
+    var titulo = container.getAttribute("data-cde-titulo") || "Correções";
+    var subtitulo = container.getAttribute("data-cde-subtitulo") || "";
+    container.classList.add("cde-lista");
+    container.innerHTML = [
+      '<div class="cde-lista-header">',
+        '<div>',
+          '<h3 class="cde-lista-titulo">' + htmlEscape(titulo) + '</h3>',
+          subtitulo ? '<p class="cde-lista-subtitulo">' + htmlEscape(subtitulo) + '</p>' : '',
+        '</div>',
+        '<span class="cde-lista-subtitulo">' + registro.length + ' registrada(s)</span>',
+      '</div>',
+      '<div class="cde-lista-filtros" role="tablist">',
+        botaoFiltro("todas", rotulo("filtroTodas")),
+        botaoFiltro("recentes", rotulo("filtroRecentes")),
+        botaoFiltro("factual", rotulo("filtroFactual")),
+        botaoFiltro("grafia", rotulo("filtroGrafia")),
+        botaoFiltro("imprecisao", rotulo("filtroImprecisao")),
+        botaoFiltro("declaracao", rotulo("filtroDeclaracao")),
+      '</div>',
+      '<div class="cde-lista-itens"></div>'
+    ].join("");
+
+    // Ligar filtros
+    container.querySelectorAll(".cde-filtro").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        filtroAtual = btn.getAttribute("data-cde-filtro-valor");
+        container.querySelectorAll(".cde-filtro").forEach(function(b) {
+          b.classList.toggle("cde-filtro-ativo", b === btn);
+        });
+        renderItens(container);
+      });
+    });
+    renderItens(container);
+  }
+  function botaoFiltro(valor, texto) {
+    var ativo = filtroAtual === valor ? " cde-filtro-ativo" : "";
+    return '<button type="button" class="cde-filtro' + ativo + '" data-cde-filtro-valor="' + valor + '">' + htmlEscape(texto) + '</button>';
+  }
+  function renderItens(container) {
+    var itensWrap = container.querySelector(".cde-lista-itens");
+    if (!itensWrap) return;
+    var filtrados = registro.filter(function(c) {
+      if (filtroAtual === "todas") return true;
+      if (filtroAtual === "recentes") return eRecente(c.data);
+      return c.tipo === filtroAtual;
+    });
+    if (filtrados.length === 0) {
+      itensWrap.innerHTML = '<div class="cde-lista-vazio">' + htmlEscape(rotulo("listaVazio")) + '</div>';
+      return;
+    }
+    // Ordenar mais recentes primeiro
+    filtrados.sort(function(a, b) {
+      return new Date(b.data || 0) - new Date(a.data || 0);
+    });
+    itensWrap.innerHTML = "";
+    filtrados.forEach(function(dados) {
+      var item = criarEl("div", "cde-lista-item");
+      renderizarBlocoEm(item, dados);
+      itensWrap.appendChild(item);
+    });
+  }
+
+  // ---------- Modal de reportar erro ----------
+  var overlay = null;
+
+  function construirModal() {
+    if (overlay) return overlay;
+    overlay = criarEl("div", "cde-modal-overlay");
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.innerHTML = [
+      '<div class="cde-modal">',
+        '<div class="cde-modal-header">',
+          '<div>',
+            '<h3 class="cde-modal-titulo">' + htmlEscape(rotulo("modalTitulo")) + '</h3>',
+            '<p class="cde-modal-subtitulo">' + htmlEscape(rotulo("modalSubtitulo")) + '</p>',
+          '</div>',
+          '<button type="button" class="cde-modal-fechar" aria-label="' + htmlEscape(rotulo("formFechar")) + '">×</button>',
+        '</div>',
+        '<form class="cde-form" novalidate>',
+          '<div class="cde-form-grupo">',
+            '<label class="cde-form-label">' + htmlEscape(rotulo("formTipo")) + '</label>',
+            '<div class="cde-form-radio-grupo">',
+              radio("tipo", "factual", rotulo("tipoFactual"), true),
+              radio("tipo", "grafia", rotulo("tipoGrafia")),
+              radio("tipo", "imprecisao", rotulo("tipoImprecisao")),
+              radio("tipo", "declaracao", rotulo("tipoDeclaracao")),
+              radio("tipo", "outro", rotulo("tipoOutro")),
+            '</div>',
+          '</div>',
+          '<div class="cde-form-grupo">',
+            '<label class="cde-form-label" for="cde-descricao">' + htmlEscape(rotulo("formDescricao")) + '</label>',
+            '<textarea id="cde-descricao" name="descricao" class="cde-form-textarea" required placeholder="' + htmlEscape(rotulo("formDescricaoPlaceholder")) + '"></textarea>',
+          '</div>',
+          '<div class="cde-form-grupo">',
+            '<label class="cde-form-label" for="cde-email">' + htmlEscape(rotulo("formEmail")) + '</label>',
+            '<input id="cde-email" name="email" type="email" class="cde-form-input" placeholder="' + htmlEscape(rotulo("formEmailPlaceholder")) + '">',
+          '</div>',
+          '<button type="submit" class="cde-form-submit">' + htmlEscape(rotulo("formEnviar")) + '</button>',
+        '</form>',
+      '</div>'
+    ].join("");
+    document.body.appendChild(overlay);
+
+    // Eventos
+    overlay.addEventListener("click", function(e) {
+      if (e.target === overlay) fecharModal();
+    });
+    overlay.querySelector(".cde-modal-fechar").addEventListener("click", fecharModal);
+    overlay.querySelectorAll(".cde-form-radio input").forEach(function(inp) {
+      inp.addEventListener("change", atualizarEstiloRadio);
+    });
+    atualizarEstiloRadio();
+    overlay.querySelector(".cde-form").addEventListener("submit", tratarEnvio);
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && overlay.classList.contains("cde-aberto")) fecharModal();
+    });
+    return overlay;
+  }
+  function radio(nome, valor, rotuloTexto, checked) {
+    return (
+      '<label class="cde-form-radio">' +
+        '<input type="radio" name="' + nome + '" value="' + valor + '"' + (checked ? ' checked' : '') + '>' +
+        '<span>' + htmlEscape(rotuloTexto) + '</span>' +
+      '</label>'
+    );
+  }
+  function atualizarEstiloRadio() {
+    overlay.querySelectorAll(".cde-form-radio").forEach(function(lbl) {
+      var inp = lbl.querySelector("input");
+      lbl.classList.toggle("cde-selecionado", inp && inp.checked);
+    });
+  }
+  function abrirModal() {
+    construirModal();
+    elementoFocoAntes = document.activeElement;
+    overlay.classList.add("cde-aberto");
+    var primeiro = overlay.querySelector(".cde-form-textarea");
+    if (primeiro) setTimeout(function() { primeiro.focus(); }, 50);
+  }
+  function fecharModal() {
+    if (!overlay) return;
+    overlay.classList.remove("cde-aberto");
+    // Limpar estado de sucesso para próxima abertura
+    setTimeout(function() {
+      var form = overlay.querySelector(".cde-form");
+      var sucesso = overlay.querySelector(".cde-form-sucesso");
+      if (sucesso) {
+        sucesso.remove();
+        form.style.display = "";
+        form.reset();
+        atualizarEstiloRadio();
+      }
+    }, 300);
+    if (elementoFocoAntes && elementoFocoAntes.focus) elementoFocoAntes.focus();
+  }
+  function tratarEnvio(e) {
+    e.preventDefault();
+    var form = e.target;
+    var submit = form.querySelector(".cde-form-submit");
+    var dados = {
+      tipo: (form.querySelector("input[name=tipo]:checked") || {}).value || "outro",
+      descricao: form.querySelector("[name=descricao]").value.trim(),
+      email: form.querySelector("[name=email]").value.trim(),
+      url: location.href,
+      dataEnvio: new Date().toISOString()
+    };
+    if (!dados.descricao) {
+      form.querySelector("[name=descricao]").focus();
+      return;
+    }
+    submit.disabled = true;
+    submit.textContent = rotulo("formEnviando");
+
+    var promessa;
+    if (typeof config.aoReportar === "function") {
+      try {
+        var r = config.aoReportar(dados);
+        promessa = (r && typeof r.then === "function") ? r : Promise.resolve(r);
+      } catch (err) { promessa = Promise.reject(err); }
+    } else if (config.endpoint) {
+      promessa = fetch(config.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      });
+    } else {
+      // Sem endpoint nem callback: apenas simula sucesso (modo demo).
+      promessa = Promise.resolve();
+    }
+
+    Promise.resolve(promessa).then(function() {
+      mostrarSucesso(form);
+    }).catch(function() {
+      submit.disabled = false;
+      submit.textContent = rotulo("formEnviar");
+      alert("Não foi possível enviar agora. Tente novamente em instantes.");
+    });
+  }
+  function mostrarSucesso(form) {
+    form.style.display = "none";
+    var sucesso = criarEl("div", "cde-form-sucesso",
+      '<div class="cde-form-sucesso-icone">✓</div>' +
+      '<p class="cde-form-sucesso-titulo">' + htmlEscape(rotulo("sucessoTitulo")) + '</p>' +
+      '<p class="cde-form-sucesso-texto">' + htmlEscape(rotulo("sucessoTexto")) + '</p>'
+    );
+    form.parentNode.appendChild(sucesso);
+    setTimeout(fecharModal, 2600);
+  }
+
+  // ---------- Botão flutuante ----------
+  function montarBotaoFlutuante() {
+    if (!config.botaoFlutuante) return;
+    if (document.querySelector(".cde-botao-flutuante")) return;
+    var btn = criarEl("button", "cde-botao-reportar cde-botao-flutuante cde-pos-" + config.posicaoBotao,
+      htmlEscape(rotulo("botaoFlutuante")));
+    btn.type = "button";
+    btn.addEventListener("click", abrirModal);
+    document.body.appendChild(btn);
+  }
+
+  // ---------- Ligar botões data-cde-abrir-form ----------
+  function ligarBotoes() {
+    document.querySelectorAll("[data-cde-abrir-form]:not([data-cde-pronto])").forEach(function(btn) {
+      btn.setAttribute("data-cde-pronto", "true");
+      if (!btn.textContent.trim()) btn.textContent = rotulo("botaoReportar");
+      if (!btn.classList.contains("cde-botao-reportar")) btn.classList.add("cde-botao-reportar");
+      btn.addEventListener("click", function(e) {
+        e.preventDefault();
+        abrirModal();
+      });
+    });
+  }
+
+  // ---------- Direito de resposta ----------
+  function transformarRespostas() {
+    document.querySelectorAll("[data-cde-resposta]:not([data-cde-pronto])").forEach(function(el) {
+      el.setAttribute("data-cde-pronto", "true");
+      el.classList.add("cde-resposta");
+      var de = el.getAttribute("data-cde-de") || "";
+      var decisao = el.getAttribute("data-cde-decisao") || "";
+      var dataAttr = el.getAttribute("data-cde-data") || "";
+      var introducao = el.getAttribute("data-cde-introducao") || "";
+      var texto = el.getAttribute("data-cde-texto") || "";
+      var rodape = el.getAttribute("data-cde-rodape") || "";
+      var partesMeta = [];
+      if (de) partesMeta.push("<strong>" + htmlEscape(de) + "</strong>");
+      if (dataAttr) partesMeta.push("publicado em <strong>" + htmlEscape(formatarData(dataAttr)) + "</strong>");
+      if (decisao) partesMeta.push("em cumprimento à decisão: <strong>" + htmlEscape(decisao) + "</strong>");
+      el.innerHTML = [
+        partesMeta.length ? '<div class="cde-resposta-meta">' + partesMeta.join(" · ") + '</div>' : '',
+        introducao ? '<p class="cde-resposta-introducao">' + htmlEscape(introducao) + '</p>' : '',
+        texto ? '<blockquote class="cde-resposta-corpo">' + htmlEscape(texto) + '</blockquote>' : '',
+        rodape ? '<div class="cde-resposta-rodape">' + htmlEscape(rodape) + '</div>' : ''
+      ].join("");
+    });
+  }
+
+  // ---------- Trecho excluído (some por completo após 24h) ----------
+  function transformarExcluidos() {
+    document.querySelectorAll("[data-cde-excluido]:not([data-cde-pronto])").forEach(function(el) {
+      el.setAttribute("data-cde-pronto", "true");
+      el.classList.add("cde-excluido");
+      var motivo = el.getAttribute("data-cde-motivo") || "não informado";
+      var marcadoPor = el.getAttribute("data-cde-marcado-por") || "";
+      var dataAttr = el.getAttribute("data-cde-data") || "";
+      var explicacao = el.getAttribute("data-cde-explicacao") || "";
+      var original = el.getAttribute("data-cde-original") || "";
+      var partesMeta = [];
+      if (dataAttr) partesMeta.push("<strong>" + htmlEscape(formatarData(dataAttr)) + "</strong>");
+      partesMeta.push("motivo: <strong>" + htmlEscape(motivo) + "</strong>");
+      if (marcadoPor) partesMeta.push("marcado por <strong>" + htmlEscape(marcadoPor) + "</strong>");
+      el.innerHTML = [
+        '<div class="cde-excluido-cabecalho">',
+          '<span class="cde-excluido-selo">⊘ Trecho excluído</span>',
+          '<span class="cde-excluido-meta">' + partesMeta.join(" · ") + '</span>',
+        '</div>',
+        explicacao ? '<p class="cde-excluido-explicacao">' + htmlEscape(explicacao) + '</p>' : '',
+        original ? (
+          '<details class="cde-excluido-toggle">' +
+            '<summary>Ver trecho excluído (texto original)</summary>' +
+            '<blockquote class="cde-excluido-original">' + htmlEscape(original) + '</blockquote>' +
+          '</details>'
+        ) : ''
+      ].join("");
+    });
+  }
+
+  // ---------- Conteúdo novo (caixa amarela; marcação some 24h, texto fica) ----------
+  function transformarNovos() {
+    document.querySelectorAll("[data-cde-novo]:not([data-cde-pronto])").forEach(function(el) {
+      el.setAttribute("data-cde-pronto", "true");
+      el.classList.add("cde-novo");
+      var dataAttr = el.getAttribute("data-cde-data") || "";
+      var horas = horasDesde(dataAttr);
+      var rotuloTopo;
+      if (horas == null) {
+        rotuloTopo = "Novo";
+      } else if (horas < 1) {
+        rotuloTopo = "Novo · acrescentado há " + Math.max(1, Math.round(horas * 60)) + "min";
+      } else if (horas < 2) {
+        rotuloTopo = "Novo · acrescentado há 1h";
+      } else {
+        rotuloTopo = "Novo · acrescentado há " + Math.round(horas) + "h";
+      }
+      el.setAttribute("data-cde-rotulo", rotuloTopo);
+    });
+  }
+
+  // ---------- Lógica de 24h embutida ----------
+  function horasDesde(isoOuString) {
+    if (!isoOuString) return null;
+    var d = new Date(isoOuString);
+    if (isNaN(d.getTime())) return null;
+    return (Date.now() - d.getTime()) / 3600000;
+  }
+
+  function aplicarRegrasDe24h() {
+    var janela = config.janelaRecenteHoras;
+
+    // Trecho excluído: bloco inteiro some
+    document.querySelectorAll(".cde-excluido[data-cde-data]").forEach(function(el) {
+      var h = horasDesde(el.getAttribute("data-cde-data"));
+      if (h != null && h > janela) el.style.display = "none";
+    });
+
+    // Conteúdo novo: marcação some, texto e <strong>...:</strong> são removidos
+    document.querySelectorAll(".cde-novo[data-cde-data]").forEach(function(el) {
+      var h = horasDesde(el.getAttribute("data-cde-data"));
+      if (h != null && h > janela) {
+        el.classList.remove("cde-novo");
+        el.removeAttribute("data-cde-rotulo");
+        el.querySelectorAll("p").forEach(function(p) {
+          var limpo = p.innerHTML.replace(/^\s*<strong>[^<]*:\s*<\/strong>\s*/i, '');
+          if (limpo !== p.innerHTML) {
+            p.innerHTML = limpo.charAt(0).toUpperCase() + limpo.slice(1);
+          }
+        });
+      }
+    });
+  }
+
+  // ---------- Boot ----------
+  function processarPagina() {
+    transformarInline();
+    transformarBlocos();
+    transformarRespostas();
+    transformarExcluidos();
+    transformarNovos();
+    transformarListas();
+    aplicarRegrasDe24h();
+    ligarBotoes();
+  }
+
+  function init(opcoes) {
+    opcoes = opcoes || {};
+    Object.keys(opcoes).forEach(function(k) {
+      if (k === "rotulos" && opcoes.rotulos) {
+        config.rotulos = Object.assign({}, config.rotulos, opcoes.rotulos);
+      } else {
+        config[k] = opcoes[k];
+      }
+    });
+    montarBotaoFlutuante();
+    processarPagina();
+  }
+
+  // API pública
+  var API = {
+    init: init,
+    config: config,
+    rotulosPadrao: rotulosPadrao,
+    registrar: function(correcoes) {
+      if (!Array.isArray(correcoes)) correcoes = [correcoes];
+      correcoes.forEach(function(c) { registro.push(c); });
+      // Atualiza listas já renderizadas
+      document.querySelectorAll("[data-cde-lista][data-cde-pronto]").forEach(function(c) {
+        renderLista(c);
+      });
+    },
+    renderLista: function(container) { renderLista(container); },
+    abrirFormulario: abrirModal,
+    fecharFormulario: fecharModal,
+    reprocessar: processarPagina,
+    definirEndpoint: function(url) { config.endpoint = url; },
+    aoReportar: function(cb) { config.aoReportar = cb; }
+  };
+  global.CorrecaoDeErros = API;
+
+  // Auto-init quando o DOM estiver pronto
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", processarPagina);
+  } else {
+    processarPagina();
+  }
+})(window);
+
+
+</script>
+
+</body>
+</html>
